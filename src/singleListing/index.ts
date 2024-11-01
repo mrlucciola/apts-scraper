@@ -1,4 +1,9 @@
-import { ZTypeEnum } from "./src/streeteasyValidation";
+import getSingleListing from "./singleListingApi";
+
+// const listingId = 3943463;
+const processListings = async () => {
+  getSingleListing;
+};
 
 /**
  * ## Get list of listings:
@@ -20,9 +25,3 @@ import { ZTypeEnum } from "./src/streeteasyValidation";
  * 1. UPSERT listing detail in store `listing_detail`
  * 1. UPDATE `dtLastLookup` in store `saved_listings`
  */
-
-// const res = await axios.get("");
-// cheerio.load(res.data);
-const aaaa = ZTypeEnum.safeParse("");
-
-console.log("Hello via Bunx!", aaaa);

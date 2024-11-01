@@ -22,3 +22,9 @@
 //   },
 //   reqBody: testReqBody,
 // };
+
+// const testReqBody: ISeReqBody = {
+//   query: gqlQuery,
+//   variables: { id: 3943463, width: 30, height: 30, quality: 80 },
+// };
+export {};
