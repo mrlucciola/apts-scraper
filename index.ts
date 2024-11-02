@@ -1,3 +1,5 @@
+import getMultiListing from "./src/listingDiscovery/req";
+import { zNumeric } from "./src/zod";
 import { ZTypeEnum } from "./src/streeteasyValidation";
 
 /**
@@ -23,6 +25,11 @@ import { ZTypeEnum } from "./src/streeteasyValidation";
 
 // const res = await axios.get("");
 // cheerio.load(res.data);
-const aaaa = ZTypeEnum.safeParse("");
 
-console.log("Hello via Bunx!", aaaa);
+console.log("Hello via Bunx!");
+
+// const listingId = 3943463;
+// const processListings = async () => {
+//   getMultiListing();
+//   getSingleListing;
+// };

@@ -16,26 +16,24 @@ const ZAmenityFeature = z.object({
   value: z.boolean(),
 });
 
-[
-  {
-    "@context": z.string(), // "http://schema.org"
+const unknownSchema = z.object({
+  "@context": z.string(), // "http://schema.org"
+  "@type": ZTypeEnum,
+  about: z.object({
     "@type": ZTypeEnum,
-    about: {
+    name: z.string(), // "78 West 3rd Street #2A"
+    offers: z.object({
       "@type": ZTypeEnum,
-      name: z.string(), // "78 West 3rd Street #2A"
-      offers: {
-        "@type": ZTypeEnum,
-        price: zNumeric,
-        priceCurrency: z.string(),
-        availability: ZAvailability, // "inStock"
-        url: z.string().url(), // "https://streeteasy.com/rental/3943463"
-      },
-      brand: ZBrandEnum,
-      description: z.string(),
-      image: z.string(),
-    },
-  },
-];
+      price: zNumeric,
+      priceCurrency: z.string(),
+      availability: ZAvailability, // "inStock"
+      url: z.string().url(), // "https://streeteasy.com/rental/3943463"
+    }),
+    brand: ZBrandEnum,
+    description: z.string(),
+    image: z.string(),
+  }),
+});
 
 const ZMainEntity = z.object({
   "@type": z.string(),

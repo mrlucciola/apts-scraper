@@ -31,34 +31,22 @@ const SeResRental = z.object({
       __typename: SeResTypename, // "Building"
     })
     .nullish(),
-  source: z.string().nullish().catch(null), // "Douglas Elliman"
+  source: z.string().nullish(), // "Douglas Elliman"
   __typename: SeResTypename, // "Rental"
 });
 type SeResRental = z.infer<typeof SeResRental>;
 
 const SeReslistedByListItem = z.object({
   business_name: z.string().nullish(),
-  image: z.any().default(null),
-  industry_professional: z
-    .object({
-      headshot: z.object({
-        url: zUrl, // "https://photos.zillowstatic.com/fp/b3e440a57c0b1d8c64b7931cfbc14517-se_large_800_400.webp",
-        __typename: SeResTypename,
-      }),
-      __typename: SeResTypename,
-    })
-    .nullable()
-    .catch(null),
+  image: z.any(),
   id: zNumeric,
   is_pro: z.boolean().catch(false),
-  name: z.string(),
-  phone: z.string(),
-  profile: z.object({
-    url: zUrl, // "https://streeteasy.com/profile/828148-lincoln-wettenhall",
-  }),
+  name: z.string().nullish(),
+  phone: z.string().nullish(),
+  profile: z.object({ url: zUrl }), // "https://streeteasy.com/profile/828148-lincoln-wettenhall",
   license: z.object({
     id: zNumeric,
-    display_type: z.string(), // "Licensed Associate Real Estate Broker",
+    display_type: z.string().nullish(), // "Licensed Associate Real Estate Broker",
     __typename: SeResTypename,
   }),
   __typename: SeResTypename,
