@@ -5,7 +5,7 @@
 
 */
 
-import connectToDb from "../dbUtils/connectToDb";
+import connectToDb from "../general/dbUtils/connectToDb";
 
 const main = async () => {
   await connectToDb();

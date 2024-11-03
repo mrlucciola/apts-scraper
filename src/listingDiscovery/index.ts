@@ -1,8 +1,16 @@
-import connectToDb from "../dbUtils/connectToDb";
-import { createListing } from "./dbUtils";
+import connectToDb from "../general/dbUtils/connectToDb";
+import {
+  createListing,
+  findAllListings,
+  findListingById,
+  findListingByListingId,
+  removeListing,
+} from "./dbUtils";
+import { testRes } from "./local/testRes";
 import getMultiListing from "./req";
+import { MultiListingResItem } from "./response";
 
-const main = async () => {
+export const main = async () => {
   await connectToDb();
 
   // @todo add loop to fetch on a timer
@@ -18,10 +26,25 @@ const main = async () => {
    }
    */
 
-  const listings = await getMultiListing(); // @todo add query
-  listings?.forEach(async (listing) => {
-    await createListing(listing);
-  });
+  // const listings = await getMultiListing(); // @todo add query
+  const listings = testRes;
+
+  // console.log("listingsx:", listings[0], "\n\n");
+
+  const allListings = await findAllListings();
+  console.log("all listings ct:", allListings.length);
+  const allListingIds = allListings.map((l) => l.listing_id);
+  const filteredListingIds = new Set(allListingIds);
+  console.log("all stats:", allListingIds.length, filteredListingIds.size);
+
+  // listings?.forEach(async (listing) => {
+  //   const validatedListing = MultiListingResItem.safeParse(listing);
+
+  //   // if (validatedListing.data?.listing_id) {
+  //   //   const foundListing = await findListingByListingId(validatedListing.data?.listing_id);
+  //   // }
+  //   validatedListing.data && (await createListing(validatedListing.data));
+  // });
 };
 
-main();
+// main();

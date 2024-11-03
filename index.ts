@@ -1,6 +1,7 @@
 import getMultiListing from "./src/listingDiscovery/req";
 import { zNumeric } from "./src/zod";
 import { ZTypeEnum } from "./src/streeteasyValidation";
+import { main } from "./src/listingDiscovery";
 
 /**
  * ## Get list of listings:
@@ -33,3 +34,5 @@ console.log("Hello via Bunx!");
 //   getMultiListing();
 //   getSingleListing;
 // };
+
+main()

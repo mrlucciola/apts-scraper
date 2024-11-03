@@ -17,18 +17,16 @@ const getMultiListing = async () => {
     };
     const headers = { ...defaultHeaders, Cookie: multiListingCookie };
 
-    const res = await axios.post<{ data: MultiListingRes[] }>(streeteasyGqlBaseUrl, reqBody, {
-      headers,
-    });
+    const res = await axios.post<MultiListingRes>(streeteasyGqlBaseUrl, reqBody, { headers });
 
-    console.log("multilisting response", res.data.data);
-    return res.data.data;
+    return res.data.data.search_organic_rentals;
   } catch (err) {
     if (!isAxiosError(err)) return console.error(err);
     const { request, response, code, message, config, cause, stack, status } = err;
     const errLog = { request, response, code, message, config, cause, stack, status };
 
     console.warn(errLog);
+    throw err;
   }
 };
 

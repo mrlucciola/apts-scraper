@@ -1,19 +1,18 @@
 import { prop, modelOptions, Severity, getModelForClass } from "@typegoose/typegoose";
-import { type MultiListingRes } from "../listingDiscovery/response";
+import { type MultiListingResItem } from "../response";
 
 @modelOptions({ schemaOptions: { timestamps: true }, options: { allowMixed: Severity.ALLOW } })
 export class Listing {
   @prop({ _id: true, required: true, unique: true })
-  id: number;
-
+  listing_id: number;
   @prop({ required: true })
-  listing_type: MultiListingRes["listing_type"]; // "Rental"
+  listing_type: MultiListingResItem["listing_type"]; // "Rental"
   @prop({ required: true })
-  longitude: MultiListingRes["longitude"]; // -74.02420044
+  longitude: MultiListingResItem["longitude"]; // -74.02420044
   @prop({ required: true })
-  latitude: MultiListingRes["latitude"]; // 40.7521019
+  latitude: MultiListingResItem["latitude"]; // 40.7521019
   @prop({ required: true })
-  listed_price: MultiListingRes["listed_price"];
+  listed_price: MultiListingResItem["listed_price"];
 }
 const ListingModel = getModelForClass(Listing);
 export default ListingModel;

@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { zNumeric } from "../zod";
 
-export const MultiListingRes = z.object({
+export const MultiListingResItem = z.object({
   listing_id: zNumeric,
   listing_type: z.string(), // "Rental"
   longitude: z.number(), // -74.02420044
@@ -9,4 +9,7 @@ export const MultiListingRes = z.object({
   listed_price: z.number(), // 3750
   __typename: z.string(), // "OrganicSearchResult"
 });
-export type MultiListingRes = z.infer<typeof MultiListingRes>;
+export type MultiListingResItem = z.infer<typeof MultiListingResItem>;
+
+// res.data.data.search_organic_rentals
+export type MultiListingRes = { data: { search_organic_rentals: MultiListingRes[] } };

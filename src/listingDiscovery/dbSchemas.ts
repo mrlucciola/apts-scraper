@@ -1,25 +1,22 @@
 import { z } from "zod";
-import { MultiListingRes } from "./response";
-import { zDates } from "../dbUtils/zodSchemas";
+// validation
+import { zDates } from "../general/dbUtils/zodSchemas";
+// interfaces
+import { MultiListingResItem } from "./response";
+import { SingleListingResBody } from "../singleListing/response";
 
-const ListingNote = z
-  .object({
-    content: z.string(),
-  })
-  .merge(zDates);
+const ListingRowBase = zDates.merge(MultiListingResItem).merge(SingleListingResBody);
+type ListingRowBase = z.infer<typeof ListingRowBase>;
 
-const insertListingSchema = MultiListingRes.merge(
+const ListingNote = zDates.merge(z.object({ content: z.string() }));
+
+export const SavedListingsRow = ListingRowBase.merge(
   z.object({
+    // ... raw fields
+    /** When updating a listing's note, array.push */
     notes: z.array(ListingNote),
+    /** When updating a single listing, array.push ListingRowBase.safeParse(row).data */
+    log: z.array(ListingRowBase),
   })
-).merge(zDates);
-
-export const SavedListingItem = z.object({});
-export type SavedListingItem = z.infer<typeof SavedListingItem>;
-
-export const SavedListingsRow = z.object({
-  // ... raw fields
-  dtLastUpdated: z.number(),
-  log: SavedListingItem,
-});
+);
 export type SavedListingsRow = z.infer<typeof SavedListingsRow>;
