@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { MultiListingRes } from "./response";
-import { zDates } from "../dbUtils/schemas";
+import { zDates } from "../dbUtils/zodSchemas";
 
 const ListingNote = z
   .object({

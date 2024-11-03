@@ -1,4 +1,8 @@
+import typegoose, { isDocument } from "typegoose";
+import * as mongoose from "mongoose";
+import { isObject } from "typegoose/lib/utils";
 import { z } from "zod";
+mongoose.Types.ObjectId.isValid;
 
 const ZTypeEnumBase = z.enum([
   "Country",
@@ -11,9 +15,7 @@ const ZTypeEnumBase = z.enum([
 ]);
 export type ZTypeEnumBase = z.infer<typeof ZTypeEnumBase>;
 
-export const ZTypeEnum = z
-  .union([ZTypeEnumBase, z.string()])
-  .pipe(z.coerce.string());
+export const ZTypeEnum = z.union([ZTypeEnumBase, z.string()]).pipe(z.coerce.string());
 export type ZTypeEnum = z.infer<typeof ZTypeEnum>;
 
 export const ZBrandEnum = z
