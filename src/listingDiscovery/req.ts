@@ -17,7 +17,7 @@ const getMultiListing = async () => {
     };
     const headers = { ...defaultHeaders, Cookie: multiListingCookie };
 
-    const res = await axios.post<{ data: MultiListingRes }>(streeteasyGqlBaseUrl, reqBody, {
+    const res = await axios.post<{ data: MultiListingRes[] }>(streeteasyGqlBaseUrl, reqBody, {
       headers,
     });
 

@@ -1,4 +1,4 @@
-import { prop, modelOptions, Severity } from "@typegoose/typegoose";
+import { prop, modelOptions, Severity, getModelForClass } from "@typegoose/typegoose";
 import { type MultiListingRes } from "../listingDiscovery/response";
 
 @modelOptions({ schemaOptions: { timestamps: true }, options: { allowMixed: Severity.ALLOW } })
@@ -15,3 +15,5 @@ export class Listing {
   @prop({ required: true })
   listed_price: MultiListingRes["listed_price"];
 }
+const ListingModel = getModelForClass(Listing);
+export default ListingModel;
