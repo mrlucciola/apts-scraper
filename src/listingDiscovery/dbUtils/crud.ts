@@ -1,5 +1,6 @@
-import log from "../logger/loggerUtils";
-import ListingModel, { Listing } from "./dbUtils/dbModels";
+import log from "../../logger/loggerUtils";
+import type { SavedListingsRow } from "./dbSchemas";
+import ListingModel, { Listing } from "./dbModels";
 
 export const createListing = async (input: Partial<Listing>) => {
   try {
@@ -25,4 +26,10 @@ export const findAllListings = async () => {
 };
 export const removeListing = async (listingId: number) => {
   return ListingModel.deleteMany({ listing_id: listingId }); // .findOneAndDelete({ listing_id: listingId });
+};
+export const updateListing = async (listing: SavedListingsRow) => {
+  return ListingModel.updateOne({
+    ...listing,
+    // log
+  });
 };

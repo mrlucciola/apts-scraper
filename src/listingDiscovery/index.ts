@@ -5,9 +5,9 @@ import {
   findListingById,
   findListingByListingId,
   removeListing,
-} from "./dbUtils";
+} from "./dbUtils/crud";
 import { testRes } from "./local/testRes";
-import getMultiListing from "./req";
+import getMultiListing from "./req/req";
 import { MultiListingResItem } from "./response";
 
 export const main = async () => {
@@ -27,15 +27,16 @@ export const main = async () => {
    */
 
   // const listings = await getMultiListing(); // @todo add query
-  const listings = testRes;
+  // console.log("req lestings:", listings);
+  // const listings = testRes;
 
   // console.log("listingsx:", listings[0], "\n\n");
 
   const allListings = await findAllListings();
-  console.log("all listings ct:", allListings.length);
-  const allListingIds = allListings.map((l) => l.listing_id);
-  const filteredListingIds = new Set(allListingIds);
-  console.log("all stats:", allListingIds.length, filteredListingIds.size);
+  // console.log("all listings ct:", allListings.length);
+  // const allListingIds = allListings.map((l) => l.listing_id);
+  // const filteredListingIds = new Set(allListingIds);
+  // console.log("all stats:", allListingIds.length, filteredListingIds.size);
 
   // listings?.forEach(async (listing) => {
   //   const validatedListing = MultiListingResItem.safeParse(listing);

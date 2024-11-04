@@ -1,5 +1,5 @@
 // config
-import multiListingGqlQuery from "./gqlQuery";
+import multiListingGqlQuery from "./req/gqlQuery";
 // interfaces
 import type { MultiListingReqBody } from "./interfaces";
 

@@ -1,7 +1,7 @@
 const multiListingGqlQuery = `
 query searchOrganicRentals($query: String) {
   search_organic_rentals(input: {
-    limit: 500,
+    limit: 5,
     query: $query
   }) {
     listing_id
@@ -9,9 +9,10 @@ query searchOrganicRentals($query: String) {
     longitude
     latitude
     listed_price
+    
     __typename
   }
-}              
+}
 `;
 
 export default multiListingGqlQuery;

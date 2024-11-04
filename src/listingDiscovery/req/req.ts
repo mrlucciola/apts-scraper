@@ -1,10 +1,10 @@
 import axios, { isAxiosError } from "axios";
 // config
-import { defaultHeaders } from "../reqConfig/headers";
-import { multiListingCookie, multiListingReqBodyBase } from "./config";
+import { defaultHeaders } from "../../reqConfig/headers";
+import { multiListingCookie, multiListingReqBodyBase } from "../config";
 // interfaces
-import type { MultiListingReqBody } from "./interfaces";
-import type { MultiListingRes } from "./response";
+import type { MultiListingReqBody } from "../interfaces";
+import type { MultiListingRes } from "../response";
 
 const streeteasyGqlBaseUrl = "https://api-internal.streeteasy.com/graphql";
 

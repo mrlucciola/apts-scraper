@@ -1,7 +1,7 @@
-import getMultiListing from "./src/listingDiscovery/req";
+import getMultiListing from "./src/listingDiscovery/req/req";
 import { zNumeric } from "./src/zod";
 import { ZTypeEnum } from "./src/streeteasyValidation";
-import { main } from "./src/listingDiscovery";
+import { main } from "./src/singleListing";
 
 /**
  * ## Get list of listings:

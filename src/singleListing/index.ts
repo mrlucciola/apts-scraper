@@ -1,14 +1,10 @@
-// Polling
-/**
-
-
-
-*/
-
 import connectToDb from "../general/dbUtils/connectToDb";
 
-const main = async () => {
+/** Polling */
+export const main = async () => {
   await connectToDb();
-};
 
-main();
+  // Get listings from db
+  // Check last update time
+  // Check that listing has `rental` prop set
+};
