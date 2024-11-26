@@ -1,4 +1,5 @@
 import { z } from "zod";
+import type { Numeric } from "../utils/zod";
 
 export const SeLocations = z.enum([
   "Hoboken",
@@ -36,20 +37,18 @@ export const SeLocations = z.enum([
   "Hudson Square",
 ]);
 export type SeLocations = z.infer<typeof SeLocations>;
-
-export const locations: {
-  [key in SeLocations]: {
-    id: `${number}`;
-    name: SeLocations;
-    level: number;
-    parent_id: number;
-    map_coordinates: {
-      encoded_boundary: string;
-      __typename: "AreaGeometry";
-    };
-    __typename: "Area";
+export type ILocation = {
+  id: Numeric;
+  name: SeLocations;
+  level: number;
+  parent_id: number;
+  map_coordinates: {
+    encoded_boundary: string;
+    __typename: "AreaGeometry";
   };
-} = {
+  __typename: "Area";
+};
+export const locations: { [key in SeLocations]: ILocation } = {
   Hoboken: {
     id: "1004000",
     name: "Hoboken",

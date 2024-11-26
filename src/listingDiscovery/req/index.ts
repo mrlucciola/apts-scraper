@@ -1,7 +1,7 @@
 import axios, { isAxiosError } from "axios";
 // config
 import { defaultHeaders } from "../../reqConfig/headers";
-import { multiListingCookie, multiListingReqBodyBase } from "../config";
+import { defaultInputQuery, multiListingCookie, newMultiReq } from "./config";
 // interfaces
 import type { MultiListingReqBody } from "../interfaces";
 import type { MultiListingRes } from "../response";
@@ -12,9 +12,7 @@ const streeteasyGqlBaseUrl = "https://api-internal.streeteasy.com/graphql";
 const getMultiListing = async () => {
   try {
     // Configure request
-    const reqBody: MultiListingReqBody = {
-      ...multiListingReqBodyBase,
-    };
+    const reqBody: MultiListingReqBody = newMultiReq(defaultInputQuery);
     const headers = { ...defaultHeaders, Cookie: multiListingCookie };
 
     const res = await axios.post<MultiListingRes>(streeteasyGqlBaseUrl, reqBody, { headers });

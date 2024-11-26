@@ -1,9 +1,15 @@
-import { prop, modelOptions, Severity, getModelForClass } from "@typegoose/typegoose";
+import {
+  prop,
+  modelOptions,
+  Severity,
+  getModelForClass,
+  type ReturnModelType,
+} from "@typegoose/typegoose";
 //
-import { type MultiListingResItem } from "../response";
-import { ListingNote, ListingRowBase } from "./dbSchemas";
+import { type MultiListingResItem } from "../../../listingDiscovery/response";
+import { ListingNote, ListingRowBase } from "../../../listingDiscovery/dbUtils/dbSchemas";
 //
-import type { SingleListingResBody } from "../../singleListing/response";
+import type { SingleListingResBody } from "../../../singleListing/response";
 
 @modelOptions({ schemaOptions: { timestamps: true }, options: { allowMixed: Severity.ALLOW } })
 export class Listing {
@@ -18,9 +24,9 @@ export class Listing {
   @prop({ required: true })
   listed_price: MultiListingResItem["listed_price"];
 
-  @prop({ required: false })
+  @prop({ required: false, default: null })
   rental: SingleListingResBody["rental"];
-  @prop({ required: false })
+  @prop({ required: false, default: null })
   listedByList: SingleListingResBody["listedByList"];
 
   @prop({ required: false })
@@ -30,3 +36,5 @@ export class Listing {
 }
 const ListingModel = getModelForClass(Listing);
 export default ListingModel;
+
+export type ListingKey = keyof Listing;

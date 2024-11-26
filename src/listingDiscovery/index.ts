@@ -1,51 +1,37 @@
-import connectToDb from "../general/dbUtils/connectToDb";
-import {
-  createListing,
-  findAllListings,
-  findListingById,
-  findListingByListingId,
-  removeListing,
-} from "./dbUtils/crud";
-import { testRes } from "./local/testRes";
-import getMultiListing from "./req/req";
+import { createListing, findAllListings, findListingByListingId } from "./dbUtils/crud";
+import getMultiListing from "./req";
 import { MultiListingResItem } from "./response";
 
-export const main = async () => {
-  await connectToDb();
+/**
+ * 1. Query existing listings - From DB
+ * 2. Fetch listings to add/update - From API
+ * 3. Add new listings and update existing listings - In DB
+ */
+export const queryFetchUpdate = async () => {
+  // 1. Query all existing listings from DB
+  const listingsDb = await findAllListings(["listing_id"]);
+  const listingIdsDb = listingsDb.map((l) => l.listing_id);
+  const uniqueListingIdsDb = new Set(listingIdsDb);
 
-  // @todo add loop to fetch on a timer
-  /**
-   while (false) {
-     const queries: string[] = [];
-     queries.forEach(async (multiListingQuery) => {
-       const listings = await getMultiListing(multiListingQuery);
-       listings?.forEach((listing) => {
-         createListing(listing);
-       });
-     });
-   }
-   */
+  // 2. Fetch new listings
+  const listingsRes = await getMultiListing();
 
-  // const listings = await getMultiListing(); // @todo add query
-  // console.log("req lestings:", listings);
-  // const listings = testRes;
+  // 3. Add new listings and/or update existing listings
+  listingsRes?.forEach(async (listing) => {
+    const validatedListing = MultiListingResItem.safeParse(listing);
 
-  // console.log("listingsx:", listings[0], "\n\n");
-
-  const allListings = await findAllListings();
-  // console.log("all listings ct:", allListings.length);
-  // const allListingIds = allListings.map((l) => l.listing_id);
-  // const filteredListingIds = new Set(allListingIds);
-  // console.log("all stats:", allListingIds.length, filteredListingIds.size);
-
-  // listings?.forEach(async (listing) => {
-  //   const validatedListing = MultiListingResItem.safeParse(listing);
-
-  //   // if (validatedListing.data?.listing_id) {
-  //   //   const foundListing = await findListingByListingId(validatedListing.data?.listing_id);
-  //   // }
-  //   validatedListing.data && (await createListing(validatedListing.data));
-  // });
+    const shouldAdd =
+      validatedListing.data && !uniqueListingIdsDb.has(validatedListing.data.listing_id);
+    const shouldUpdate =
+      validatedListing.data && uniqueListingIdsDb.has(validatedListing.data.listing_id);
+    if (shouldAdd) {
+      await createListing(validatedListing.data);
+    }
+  });
 };
 
-// main();
+/** */
+export const main = async () => {
+  await queryFetchUpdate();
+  // @todo add loop to fetch on a timer
+};

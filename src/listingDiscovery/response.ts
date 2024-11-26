@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { zNumeric } from "../zod";
+import { zNumeric } from "../utils/zod";
 
 export const MultiListingResItem = z.object({
   listing_id: zNumeric,

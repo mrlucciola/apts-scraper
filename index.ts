@@ -1,7 +1,11 @@
-import getMultiListing from "./src/listingDiscovery/req/req";
-import { zNumeric } from "./src/zod";
-import { ZTypeEnum } from "./src/streeteasyValidation";
-import { main } from "./src/singleListing";
+import getMultiListing from "./src/listingDiscovery/req";
+import { zNumeric } from "./src/utils/zod";
+import { ZTypeEnum } from "./src/utils/streeteasyValidation";
+// import { main } from "./src/singleListing";
+import { main } from "./src/listingDiscovery";
+import connectToDb from "./src/general/dbUtils/connectToDb";
+
+await connectToDb();
 
 /**
  * ## Get list of listings:
@@ -35,4 +39,4 @@ console.log("Hello via Bunx!");
 //   getSingleListing;
 // };
 
-main()
+main();

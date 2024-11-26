@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { zNumeric, zUrl } from "../zod";
+import { zNumeric, zUrl } from "../utils/zod";
 
 // __typename
 const SeResTypename = z.enum([
@@ -36,7 +36,7 @@ const SeResRental = z.object({
 });
 type SeResRental = z.infer<typeof SeResRental>;
 
-const SeReslistedByListItem = z.object({
+const SeResListedByListItem = z.object({
   business_name: z.string().nullish(),
   image: z.any(),
   id: zNumeric,
@@ -51,10 +51,10 @@ const SeReslistedByListItem = z.object({
   }),
   __typename: SeResTypename,
 });
-type SeReslistedByListItem = z.infer<typeof SeReslistedByListItem>;
+type SeResListedByListItem = z.infer<typeof SeResListedByListItem>;
 
 export const SingleListingResBody = z.object({
   rental: SeResRental,
-  listedByList: z.array(SeReslistedByListItem),
+  listedByList: z.array(SeResListedByListItem),
 });
 export type SingleListingResBody = z.infer<typeof SingleListingResBody>;

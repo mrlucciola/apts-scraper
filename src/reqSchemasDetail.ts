@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { zNumeric } from "./zod";
-import { ZAvailability, ZBrandEnum, ZTypeEnum } from "./streeteasyValidation";
+import { zNumeric } from "./utils/zod";
+import { ZAvailability, ZBrandEnum, ZTypeEnum } from "./utils/streeteasyValidation";
 
 const ZAmenityFeatureKey = z.enum([
   "Dishwasher",
