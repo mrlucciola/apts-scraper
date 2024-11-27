@@ -1,7 +1,6 @@
 // interfaces
 import { z } from "zod";
-import type { ILocation } from "../../general/locations";
-import { zNumeric, type Numeric } from "../../utils/zod";
+import { zNumeric } from "../../utils/zod";
 import type { MultiListingReqBody } from "../interfaces";
 
 const operationName = "searchOrganicRentals";

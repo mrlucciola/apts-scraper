@@ -1,4 +1,4 @@
-import { findAllListings } from "./dbUtils/crud";
+import { findAllListings } from "../dbUtils/crud";
 
 export const fetchItems = async () => {
   const allListings = await findAllListings();

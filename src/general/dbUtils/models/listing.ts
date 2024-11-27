@@ -1,10 +1,4 @@
-import {
-  prop,
-  modelOptions,
-  Severity,
-  getModelForClass,
-  type ReturnModelType,
-} from "@typegoose/typegoose";
+import { prop, modelOptions, Severity, getModelForClass } from "@typegoose/typegoose";
 //
 import { type MultiListingResItem } from "../../../listingDiscovery/response";
 import { ListingNote, ListingRowBase } from "../../../listingDiscovery/dbUtils/dbSchemas";
@@ -34,7 +28,10 @@ export class Listing {
   @prop({ required: false })
   log: ListingRowBase[];
 }
-const ListingModel = getModelForClass(Listing);
+const ListingModel = getModelForClass(Listing, {
+  options: { allowMixed: Severity.ALLOW },
+  schemaOptions: { timestamps: true },
+});
 export default ListingModel;
 
 export type ListingKey = keyof Listing;

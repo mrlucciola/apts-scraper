@@ -1,9 +1,7 @@
-import getMultiListing from "./src/listingDiscovery/req";
-import { zNumeric } from "./src/utils/zod";
-import { ZTypeEnum } from "./src/utils/streeteasyValidation";
-// import { main } from "./src/singleListing";
 import { main } from "./src/listingDiscovery";
 import connectToDb from "./src/general/dbUtils/connectToDb";
+import { runSingleListing } from "./src/singleListing";
+import testReq from "./src/testReq";
 
 await connectToDb();
 
@@ -39,4 +37,7 @@ console.log("Hello via Bunx!");
 //   getSingleListing;
 // };
 
-main();
+// main();
+// runSingleListing();
+
+testReq();

@@ -5,8 +5,7 @@ import { defaultInputQuery, multiListingCookie, newMultiReq } from "./config";
 // interfaces
 import type { MultiListingReqBody } from "../interfaces";
 import type { MultiListingRes } from "../response";
-
-const streeteasyGqlBaseUrl = "https://api-internal.streeteasy.com/graphql";
+import { graphqlApiUrl } from "../../graphql";
 
 /** Only params are location, price and amenities */
 const getMultiListing = async () => {
@@ -15,7 +14,7 @@ const getMultiListing = async () => {
     const reqBody: MultiListingReqBody = newMultiReq(defaultInputQuery);
     const headers = { ...defaultHeaders, Cookie: multiListingCookie };
 
-    const res = await axios.post<MultiListingRes>(streeteasyGqlBaseUrl, reqBody, { headers });
+    const res = await axios.post<MultiListingRes>(graphqlApiUrl, reqBody, { headers });
 
     return res.data.data.search_organic_rentals;
   } catch (err) {

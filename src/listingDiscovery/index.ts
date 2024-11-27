@@ -1,4 +1,4 @@
-import { createListing, findAllListings, findListingByListingId } from "./dbUtils/crud";
+import { createListing, findAllListings, findListingByListingId } from "../dbUtils/crud";
 import getMultiListing from "./req";
 import { MultiListingResItem } from "./response";
 

@@ -6,8 +6,7 @@ import { singleListingCookie, singleListingQueryVars } from "./reqConfig";
 // interfaces
 import type { ISeReqBody } from "./interfaces";
 import type { SingleListingRes } from "./interfaces";
-
-const streeteasyGqlBaseUrl = "https://api-internal.streeteasy.com/graphql";
+import { graphqlApiUrl } from "../graphql";
 
 const getSingleListing = async (listingId: number | null) => {
   if (!listingId) return console.log("no id provided:", listingId);
@@ -18,12 +17,15 @@ const getSingleListing = async (listingId: number | null) => {
       query: gqlQuery,
       variables: { id: listingId, ...singleListingQueryVars },
     };
-    const headers = { ...defaultHeaders, Cookie: singleListingCookie };
 
-    const res = await axios.post<{ data: SingleListingRes }>(streeteasyGqlBaseUrl, reqBody, {
-      headers,
+    const res = await axios.post<{ data: SingleListingRes }>(graphqlApiUrl, reqBody, {
+      headers: {
+        ...defaultHeaders,
+        Cookie: singleListingCookie,
+      },
     });
 
+    console.log("the HEADERS", res.headers);
     console.log("the data", res.data.data);
     return res.data.data;
   } catch (err) {

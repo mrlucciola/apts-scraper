@@ -6,8 +6,6 @@ https://streeteasy.com/building/78-west-3-street-new_york/2a
 
 import { z } from "zod";
 
-const graphql_endpoint = "https://api-internal.streeteasy.com/graphql";
-
 const aaa = [
   {
     "@context": "http://schema.org",
