@@ -1,11 +1,11 @@
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
-import { findAllListings, findListingByListingId } from "../dbUtils/crud";
+import { findAllListings, findListingByListingId } from "../db/crud";
 import { docToDbModel } from "./resUtils";
 import { fetchListing } from "./reqUtils";
 import { fetchResToDoc } from "./resUtils";
-import connectToDb from "../general/dbUtils/connectToDb";
+import connectToDb from "../db/connectToDb";
 
 await connectToDb();
 

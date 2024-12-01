@@ -1,10 +1,10 @@
 import { prop, modelOptions, Severity, getModelForClass } from "@typegoose/typegoose";
 //
-import { type MultiListingResItem } from "../../../listingDiscovery/response";
-import { ListingNote, ListingRowBase } from "../../../listingDiscovery/dbUtils/dbSchemas";
+import { type MultiListingResItem } from "../../listingDiscovery/response";
+import { ListingNote, ListingRowBase } from "../../listingDiscovery/dbUtils/dbSchemas";
 //
-import type { SingleListingResBody } from "../../../local.singleListingDEPREC/response";
-import type { StreeteasyHtmlDetailSchema } from "../../../singleListing/dbUtils/models";
+import type { SingleListingResBody } from "../../local.singleListingDEPREC/response";
+import type { StreeteasyHtmlDetailSchema } from "../../singleListing/dbUtils/models";
 
 @modelOptions({ schemaOptions: { timestamps: true }, options: { allowMixed: Severity.ALLOW } })
 export class Listing {
@@ -36,5 +36,6 @@ const ListingModel = getModelForClass(Listing, {
   schemaOptions: { timestamps: true },
 });
 export default ListingModel;
+export type ListingModel = typeof ListingModel;
 
 export type ListingKey = keyof Listing;

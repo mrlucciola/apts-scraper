@@ -1,7 +1,7 @@
 import logger from "pino";
 
 import dayjs from "dayjs";
-import config from "../dbUtils/config";
+import config from "../db/config";
 
 const level = config.logLevel;
 

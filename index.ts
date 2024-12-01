@@ -1,5 +1,5 @@
 import { main } from "./src/listingDiscovery";
-import connectToDb from "./src/general/dbUtils/connectToDb";
+import connectToDb from "./src/db/connectToDb";
 import { runSingleListing } from "./src/local.singleListingDEPREC";
 // import testReq from "./src/testReq";
 

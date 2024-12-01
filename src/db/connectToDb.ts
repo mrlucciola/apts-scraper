@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
-import config from "../../dbUtils/config";
-import log from "../../logger/loggerUtils";
+import config from "./config";
+import log from "../logger/loggerUtils";
 
 const connectToDb = async () => {
   const dbUri = config.dbUri;

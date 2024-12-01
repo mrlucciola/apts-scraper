@@ -1,5 +1,5 @@
 import log from "../logger/loggerUtils";
-import ListingModel, { Listing, type ListingKey } from "../general/dbUtils/models/listing";
+import ListingModel, { Listing, type ListingKey } from "./models/listing";
 import type { DocumentType } from "@typegoose/typegoose/lib/types";
 
 export const createListing = async (input: Partial<Listing>) => {
