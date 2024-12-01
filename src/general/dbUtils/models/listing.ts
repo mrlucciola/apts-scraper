@@ -3,7 +3,8 @@ import { prop, modelOptions, Severity, getModelForClass } from "@typegoose/typeg
 import { type MultiListingResItem } from "../../../listingDiscovery/response";
 import { ListingNote, ListingRowBase } from "../../../listingDiscovery/dbUtils/dbSchemas";
 //
-import type { SingleListingResBody } from "../../../singleListing/response";
+import type { SingleListingResBody } from "../../../local.singleListingDEPREC/response";
+import type { StreeteasyHtmlDetailSchema } from "../../../singleListing/dbUtils/models";
 
 @modelOptions({ schemaOptions: { timestamps: true }, options: { allowMixed: Severity.ALLOW } })
 export class Listing {
@@ -22,6 +23,8 @@ export class Listing {
   rental: SingleListingResBody["rental"];
   @prop({ required: false, default: null })
   listedByList: SingleListingResBody["listedByList"];
+  @prop({ required: false, default: null })
+  htmlDetail: StreeteasyHtmlDetailSchema;
 
   @prop({ required: false })
   notes: ListingNote[];

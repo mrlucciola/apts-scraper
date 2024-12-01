@@ -3,7 +3,7 @@ import { z } from "zod";
 import { zDates } from "../../general/dbUtils/zodSchemas";
 // interfaces
 import { MultiListingResItem } from "../response";
-import { SingleListingResBody } from "../../singleListing/response";
+import { SingleListingResBody } from "../../local.singleListingDEPREC/response";
 
 export const ListingRowBase = zDates.merge(MultiListingResItem).merge(SingleListingResBody);
 export type ListingRowBase = z.infer<typeof ListingRowBase>;

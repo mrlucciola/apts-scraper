@@ -1,9 +1,7 @@
-import typegoose, { isDocument } from "typegoose";
 import * as mongoose from "mongoose";
-import { isObject } from "typegoose/lib/utils";
 import { z } from "zod";
-mongoose.Types.ObjectId.isValid;
 
+mongoose.Types.ObjectId.isValid;
 const ZTypeEnumBase = z.enum([
   "Country",
   "ItemPage",

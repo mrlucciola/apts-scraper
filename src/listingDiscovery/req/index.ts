@@ -5,7 +5,7 @@ import { defaultInputQuery, multiListingCookie, newMultiReq } from "./config";
 // interfaces
 import type { MultiListingReqBody } from "../interfaces";
 import type { MultiListingRes } from "../response";
-import { graphqlApiUrl } from "../../graphql";
+import { graphqlApiUrl } from "../../local.singleListingDEPREC/viewerQueryGql";
 
 /** Only params are location, price and amenities */
 const getMultiListing = async () => {

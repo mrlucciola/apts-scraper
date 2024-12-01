@@ -23,6 +23,6 @@
   },
   "scripts": {
     "dev": "bun run --hot index.ts",
-    "req": "bun run --hot req.ts"
+    "req": "bun run --hot src/singleListing/index.ts"
   }
 }

@@ -1,9 +1,6 @@
 import log from "../logger/loggerUtils";
-import type { SavedListingsRow } from "../listingDiscovery/dbUtils/dbSchemas";
 import ListingModel, { Listing, type ListingKey } from "../general/dbUtils/models/listing";
-import type { ReturnModelType } from "@typegoose/typegoose";
-import type { BeAnObject, DocumentType } from "@typegoose/typegoose/lib/types";
-import type { SubModel } from "./interfaces";
+import type { DocumentType } from "@typegoose/typegoose/lib/types";
 
 export const createListing = async (input: Partial<Listing>) => {
   try {
@@ -35,9 +32,4 @@ export const findAllListings = async <TFields extends undefined | ListingKey[]>(
 export const removeListing = async (listing_id: number) => {
   return ListingModel.deleteMany({ listing_id }); // .findOneAndDelete({ listing_id });
 };
-export const updateListing = async (listing: SavedListingsRow) => {
-  return ListingModel.updateOne({
-    ...listing,
-    // log
-  });
-};
+export const updateListing = async (listing: Listing) => ListingModel.updateOne(listing);

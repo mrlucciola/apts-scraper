@@ -1,7 +1,7 @@
 import { main } from "./src/listingDiscovery";
 import connectToDb from "./src/general/dbUtils/connectToDb";
-import { runSingleListing } from "./src/singleListing";
-import testReq from "./src/testReq";
+import { runSingleListing } from "./src/local.singleListingDEPREC";
+// import testReq from "./src/testReq";
 
 await connectToDb();
 
@@ -40,4 +40,4 @@ console.log("Hello via Bunx!");
 // main();
 // runSingleListing();
 
-testReq();
+// testReq();
