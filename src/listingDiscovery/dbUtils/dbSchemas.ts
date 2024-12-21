@@ -1,6 +1,6 @@
 import { z } from "zod";
 // validation
-import { zDates } from "../../general/dbUtils/zodSchemas";
+import { zDates } from "../../db/zodSchemas";
 // interfaces
 import { MultiListingResItem } from "../response";
 import { SingleListingResBody } from "../../local.singleListingDEPREC/response";

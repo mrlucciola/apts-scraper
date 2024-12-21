@@ -1,5 +1,5 @@
 import { z } from "zod";
-import type { Numeric } from "../utils/zod";
+import { zNumeric, type Numeric } from "../utils/zod";
 
 export const SeLocations = z.enum([
   "Hoboken",
@@ -432,4 +432,11 @@ export const locations: { [key in SeLocations]: ILocation } = {
     },
     __typename: "Area",
   },
+};
+/** (Streeteasy) Get/Lookup location info by numeric id */
+export const lookupLocationByIdSe = (numericLocationId: Numeric) => {
+  const locationId = zNumeric.safeParse(numericLocationId);
+  if (!locationId.data) return null;
+
+  return locations[locationId.data];
 };
