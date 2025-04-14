@@ -1,8 +1,10 @@
 import fs from "fs";
-import { PastListingsExperience, type PriceHistory } from "./altHtmlSchemas";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
+// local
+import { PastListingsExperience, type PriceHistory } from "./altHtmlSchemas";
+
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
