@@ -48,6 +48,7 @@ export type ILocation = {
   };
   __typename: "Area";
 };
+
 export const locations: { [key in SeLocations]: ILocation } = {
   Hoboken: {
     id: "1004000",
@@ -433,10 +434,21 @@ export const locations: { [key in SeLocations]: ILocation } = {
     __typename: "Area",
   },
 };
-/** (Streeteasy) Get/Lookup location info by numeric id */
-export const lookupLocationByIdSe = (numericLocationId: Numeric) => {
-  const locationId = zNumeric.safeParse(numericLocationId);
-  if (!locationId.data) return null;
+const locationsArrByKey = Object.entries(locations) as [SeLocations, ILocation][];
+const locationsArrById: [number, ILocation][] = locationsArrByKey.map(([_key, location]) => {
+  const idAsNumber = zNumeric.parse(location.id);
+  return [idAsNumber, location];
+});
 
-  return locations[locationId.data];
+export const locationsMap = new Map<SeLocations | number, ILocation>([
+  ...locationsArrByKey,
+  ...locationsArrById,
+]);
+
+/** (Streeteasy) Get/Lookup location info by numeric id */
+export const lookupLocation = (locationLookup: Numeric | SeLocations): ILocation | null => {
+  const locationId =
+    zNumeric.safeParse(locationLookup).data ?? SeLocations.safeParse(locationLookup).data;
+
+  return locationId ? locationsMap.get(locationId) ?? null : null;
 };
