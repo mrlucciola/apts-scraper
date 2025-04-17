@@ -15,6 +15,7 @@ const getMultiListing = async () => {
     const headers = { ...defaultHeaders, Cookie: multiListingCookie };
 
     const res = await axios.post<MultiListingRes>(graphqlApiUrl, reqBody, { headers });
+    console.warn('res',res)
 
     return res.data.data.search_organic_rentals;
   } catch (err) {

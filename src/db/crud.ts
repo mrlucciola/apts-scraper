@@ -1,6 +1,5 @@
 import log from "../logger/loggerUtils";
-import ListingModel, { Listing, type ListingKey } from "./models/listing";
-import type { DocumentType } from "@typegoose/typegoose/lib/types";
+import ListingModel, { Listing, type ListingDoc, type ListingKey } from "./models/listing";
 
 export const createListing = async (input: Partial<Listing>) => {
   try {
@@ -14,7 +13,7 @@ export const createListing = async (input: Partial<Listing>) => {
   }
 };
 
-export const findListingById = async (id: DocumentType<Listing>["_id"]) => {
+export const findListingById = async (id: ListingDoc["_id"]) => {
   return await ListingModel.findById(id);
 };
 export const findListingByListingId = async (listing_id: number) => {

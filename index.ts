@@ -1,6 +1,7 @@
 import { main } from "./src/listingDiscovery";
 import connectToDb from "./src/db/connectToDb";
 import { runSingleListing } from "./src/local.singleListingDEPREC";
+import getMultiListing from "./src/listingDiscovery/req";
 // import testReq from "./src/testReq";
 
 await connectToDb();
@@ -33,7 +34,7 @@ console.log("Hello via Bunx!");
 
 // const listingId = 3943463;
 // const processListings = async () => {
-//   getMultiListing();
+  getMultiListing();
 //   getSingleListing;
 // };
 
