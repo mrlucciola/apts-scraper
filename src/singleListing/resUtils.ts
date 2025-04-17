@@ -10,6 +10,7 @@ import {
   parseFullAddress,
   parseGqlItemPage,
 } from "./parseHtml/activeRentalStats";
+import type { IParseSingleListing } from "./interfaces";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -68,24 +69,9 @@ export const parseResCookies = (res: Response) => {
 };
 
 // Convert HTML-response to document
-export const fetchResToDoc = async (resOrFilepath: Response): Promise<Document> => {
-  // fs.readFileSync("./src/singleListing/local.html.test/SUCCESS/200-2024-11-29-14:53:09.html", {
-  //   encoding: "utf8",
-  //   flag: "r",
-  // })
-
-  const htmlStr = await resOrFilepath.text();
+export const htmlResToDoc: IParseSingleListing<any, Document> = async (res) => {
+  const htmlStr = await res.text();
 
   const parsedHtmlDom: JSDOM = new JSDOM(htmlStr);
   return parsedHtmlDom.window.document;
 };
-
-export const docToDbModel = (doc: Document): StreeteasyHtmlDetailSchema =>
-  StreeteasyHtmlDetailSchema.parse({
-    priceHistory: parsePriceHistory(doc),
-    savedByCt: parseSavedUserCt(doc),
-    activeRentalStats: parseActiveRentalStats(doc),
-    description: parseGqlItemPage(doc).about.description,
-    name: parseGqlItemPage(doc).about.name,
-    fullAddress: parseFullAddress(doc),
-  });

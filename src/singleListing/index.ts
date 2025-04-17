@@ -1,26 +1,40 @@
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
-import { findAllListings, findListingByListingId } from "../db/crud";
-import { docToDbModel } from "./resUtils";
-import { fetchListing } from "./reqUtils";
-import { fetchResToDoc } from "./resUtils";
+// db
 import connectToDb from "../db/connectToDb";
+import { findAllListings } from "../db/crud";
+// req
+import { updateSingleListingStreeteasy } from "./externalApiUtils/streeteasy";
+// interfaces
+import type { ListingDoc } from "../db/models/listing";
 
 await connectToDb();
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
-const fetchParseUpdateListing = async (listingId: number): Promise<void> => {
-  const res = await fetchListing(`https://streeteasy.com/rental/${listingId}`);
+export const fetchParseUpdateListing = async (listing: ListingDoc): Promise<void> => {
+  const hasStreeteasyId = !!listing.listing_id;
+  /** @todo not yet implented */
+  const hasHotpadsId = false;
+  /** @todo not yet implented */
+  const hasZillowId = false;
+  const hasNoIds = !hasStreeteasyId && !hasHotpadsId && !hasZillowId;
 
-  const parsedHtmlDoc = await fetchResToDoc(res);
-  const dbPayload = docToDbModel(parsedHtmlDoc);
-  console.log("dbPayload", dbPayload);
-  const listingDb = await findListingByListingId(dbPayload.activeRentalStats.listID);
-  if (!listingDb) return;
-  const updateDbRes = await listingDb.updateOne({ htmlDetail: dbPayload });
+  if (hasNoIds) {
+    console.error("Listing does not contain any listing-ids for supported services.", listing);
+    throw new Error(
+      `Listing does not contain any listing-ids for supported services: Document ID: "${listing._id}"`
+    );
+  }
+
+  updateSingleListingStreeteasy.fetchAndUpdate(listing);
+
+  // @todo support "Hotpads" fetch-parse-update flow
+  //  - updateSingleListingHotpads.fetchAndUpdate(listing);
+  // @todo support "Zillow" fetch-parse-update flow
+  //  - updateSingleListingZillow.fetchAndUpdate(listing);
 };
 
 /**
@@ -38,9 +52,7 @@ export const fetchParseUpdateAllListings = async () => {
 
   // @todo Sort by `detail.dtUpdated`
 
-  const listingIdsDb = listingsDb.map((l) => l.listing_id);
-  const uniqueListingIdsDb = new Set(listingIdsDb);
-
-  await uniqueListingIdsDb.forEach(fetchParseUpdateListing);
+  await listingsDb.forEach((lll) => lll);
+  await listingsDb.forEach(fetchParseUpdateListing);
 };
 fetchParseUpdateAllListings();

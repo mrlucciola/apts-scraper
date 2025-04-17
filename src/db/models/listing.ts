@@ -1,4 +1,5 @@
 import { prop, modelOptions, Severity, getModelForClass } from "@typegoose/typegoose";
+import type { DocumentType } from "@typegoose/typegoose/lib/types";
 //
 import { type MultiListingResItem } from "../../listingDiscovery/response";
 import { ListingNote, ListingRowBase } from "../../listingDiscovery/dbUtils/dbSchemas";
@@ -37,5 +38,7 @@ const ListingModel = getModelForClass(Listing, {
 });
 export default ListingModel;
 export type ListingModel = typeof ListingModel;
+
+export type ListingDoc = DocumentType<Listing>;
 
 export type ListingKey = keyof Listing;

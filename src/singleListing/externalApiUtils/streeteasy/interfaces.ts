@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { zUrl } from "../../../utils/zod";
 
 export const Amenities = z.enum([
   "central_ac",
@@ -20,3 +21,6 @@ export const amenitiesMap: { [k in Amenities]: string } = {
   terrace: "Terrace",
   washer_dryer: "Washer / Dryer in Unit",
 };
+
+/** Example: https://streeteasy.com/rental/3943463 */
+export const ZStreeteasyListingUrl = zUrl.regex(/(streeteasy\.com\/rental\/\d+)$/gm);
