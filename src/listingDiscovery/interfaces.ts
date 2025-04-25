@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+/** @deprecated - this is for pre-v6 streeteasy */
 export const MultiListingReqBody = z.object({
   operationName: z.enum(["searchOrganicRentals"]),
   variables: z.object({
@@ -9,4 +10,5 @@ export const MultiListingReqBody = z.object({
   /** "query searchOrganicRentals($query: String) {\n  search_organic_rentals(input: {limit: 500, query: $query}) {\n    listing_id\n    listing_type\n    longitude\n    latitude\n    listed_price\n    __typename\n  }\n}\n" */
   query: z.string(),
 });
+/** @deprecated - this is for pre-v6 streeteasy */
 export type MultiListingReqBody = z.infer<typeof MultiListingReqBody>;

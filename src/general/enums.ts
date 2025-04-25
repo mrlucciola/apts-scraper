@@ -1,4 +1,6 @@
 import { z } from "zod";
 
-export const ExternalApiService = z.enum(["Streeteasy", "Hotpads", "Zillow"]);
-export type ExternalApiService = z.infer<typeof ExternalApiService>;
+/** External API Service Provider lookup/key: i.e. Streeteasy, Hotpads, Zillow */
+export const ExtApiService = z.enum(["streeteasy", "hotpads", "zillow"]);
+/** External API Service Provider lookup/key: i.e. Streeteasy, Hotpads, Zillow */
+export type ExtApiService = z.infer<typeof ExtApiService>;

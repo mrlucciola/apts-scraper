@@ -1,4 +1,4 @@
-import { createListing, findAllListings, findListingByListingId } from "../db/crud";
+import { createListing, findAllListings } from "../db/crud";
 import getMultiListing from "./req";
 import { MultiListingResItem } from "./response";
 
@@ -6,6 +6,7 @@ import { MultiListingResItem } from "./response";
  * 1. Query existing listings - From DB
  * 2. Fetch listings to add/update - From API
  * 3. Add new listings and update existing listings - In DB
+ * 4. @todo When user-profiles are implemented - add support for custom search params, stored in DB
  */
 export const queryFetchUpdate = async () => {
   // 1. Query all existing listings from DB

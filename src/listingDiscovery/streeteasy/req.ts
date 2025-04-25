@@ -1,9 +1,4 @@
-import {
-  ReqBodyGql,
-  ReqBodyGqlSorting,
-  newReqBodyMlStreeteasy,
-  type ReqBodyGqlFilters,
-} from "./gqlConfig";
+import { ReqBodyGql, ReqBodyGqlVariablesInput, newReqBodyMlStreeteasy } from "./gqlConfig";
 import type { GqlResJson } from "./res";
 
 /** @todo move to reqConfig.ts */
@@ -42,37 +37,23 @@ const reqConfigDefault: RequestInit = {
   // body: "",
 };
 
+const defaultQuery = ReqBodyGql.shape.query.parse(undefined);
+const defaultQueryInputVariables = ReqBodyGqlVariablesInput.parse(undefined);
+
 /** @todo
  * @deprecated add customizable gql query-interface
  */
 export const fetchMultilisting = async (
-  /** Page number (i.e. 1) */
-  page: number,
-  /** Results per page (i.e. 500) */
-  perPage: number,
-  rentalStatus: ReqBodyGqlFilters["rentalStatus"] = "ACTIVE"
+  query: ReqBodyGql["query"] = defaultQuery,
+  queryVariables: Partial<ReqBodyGqlVariablesInput> = defaultQueryInputVariables
 ) => {
   // 1. Config & send request
-  const filters = {
-    rentalStatus,
-    areas: [1004000], // Hoboken = 1004000
-    price: { lowerBound: 1000, upperBound: 10000 },
-  };
   const reqConfig: RequestInit = {
     ...reqConfigDefault,
     body: newReqBodyMlStreeteasy({
-      query: ReqBodyGql.shape.query.parse(undefined),
-      variables: {
-        input: {
-          filters,
-          page,
-          perPage,
-          sorting: ReqBodyGqlSorting.parse({}), // @note Considering
-          userSearchToken: process.env.STREETEASY_GQL_USER_SEARCH_TOKEN as string,
-          /** @note incomplete enum - unnecessary */
-          adStrategy: "NONE",
-        },
-      },
+      query,
+      /** @todo Remove type bypass */
+      variables: { input: queryVariables as ReqBodyGqlVariablesInput },
     }),
   };
   const res = await fetch(apiEndpoint, reqConfig);

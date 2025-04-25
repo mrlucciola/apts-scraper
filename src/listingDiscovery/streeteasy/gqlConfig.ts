@@ -7,11 +7,11 @@ export const ReqBodyGqlFiltersPrice = z.object({
 export type ReqBodyGqlFiltersPrice = z.infer<typeof ReqBodyGqlFiltersPrice>;
 
 export const ReqBodyGqlFilters = z.object({
-  /** @note incomplete enum */
+  /** @note Incomplete enum */
   rentalStatus: z.enum(["ACTIVE"]).default("ACTIVE"),
   areas: z.array(z.number()).default([1004000]), // Hoboken = 1004000
   /** @todo add more filters */
-  price: ReqBodyGqlFiltersPrice,
+  price: ReqBodyGqlFiltersPrice.default(ReqBodyGqlFiltersPrice.parse(undefined)),
 });
 export type ReqBodyGqlFilters = z.infer<typeof ReqBodyGqlFilters>;
 
@@ -27,10 +27,14 @@ export const ReqBodyGqlVariablesInput = z.object({
   filters: ReqBodyGqlFilters,
   page: z.number().default(1),
   perPage: z.number().default(500),
-  sorting: ReqBodyGqlSorting,
+  sorting: ReqBodyGqlSorting.default(ReqBodyGqlSorting.parse(undefined)),
 
   userSearchToken: z.string().default(process.env.STREETEASY_GQL_USER_SEARCH_TOKEN as string),
-  /** @note incomplete enum - unnecessary */
+  /**
+   *
+   * @note This property has no impact on query currently
+   * @note Incomplete enum
+   */
   adStrategy: z.enum(["NONE"]).catch("NONE"),
 });
 export type ReqBodyGqlVariablesInput = z.infer<typeof ReqBodyGqlVariablesInput>;

@@ -1,6 +1,5 @@
 import type { DocumentType } from "@typegoose/typegoose/lib/types";
 import type { Listing } from "../db/models/listing";
-import type { Query, UpdateQuery } from "mongoose";
 
 export type FetchParseUpdateListingFxn = (listing: DocumentType<Listing>) => Promise<void>;
 
