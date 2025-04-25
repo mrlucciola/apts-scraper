@@ -18,6 +18,8 @@ export type MultiListingReqBody = z.infer<typeof MultiListingReqBody>;
 
 export type ResType = Response | AxiosResponse;
 
+export type FetchFxn<TRes extends ResType> = (..._: any) => FetchReturnBody<TRes>;
+
 export type FetchReturnBody<TRes extends ResType = Response> = Promise<{
   response: TRes;
   reqConfig: RequestInit;
@@ -37,12 +39,14 @@ export type ValidateAndTransformToDbModel<TListingRes, TListingDb> = (
   listings: TListingRes[]
 ) => TListingDb[];
 
+export type InsertToDbFxn<TListingDb> = (listings: TListingDb[]) => Promise<void>;
+
 export class ServiceConfigMl<
   TBody,
   TListingRes,
   TListingDb,
   // TFilterValue,
-  TReqFxn extends (..._: any) => FetchReturnBody<TRes>,
+  TReqFxn extends FetchFxn<TRes>,
   TSrv extends ExtApiService,
   TRes extends ResType
 > {
@@ -54,7 +58,7 @@ export class ServiceConfigMl<
     public extractListingsFromBody: ExtractListingsFromBodyFxn<TBody, TListingRes>,
     public validateAndTransformToDbModel: ValidateAndTransformToDbModel<TListingRes, TListingDb>,
     // @todo figure this out - public filterListingsBy: (listing: TListingDb) => TFilterValue,
-    public insertToDb: (listings: TListingDb[]) => Promise<void>,
+    public insertToDb: InsertToDbFxn<TListingDb>,
     public handleRequestError?: (...params: any) => Promise<void>
   ) {}
 
@@ -69,7 +73,8 @@ export class ServiceConfigMl<
 
     const body = await this.extractBodyFromRes(response);
 
-    await this.logRequest(response, reqConfig, body);
+    // @note This may be used in the near future
+    const logDoc = await this.logRequest(response, reqConfig, body);
 
     await (this.handleRequestError && this.handleRequestError(response));
 
@@ -92,7 +97,12 @@ export class ServiceConfigMl<
     TReqFxn extends (..._: any) => FetchReturnBody<TRes>,
     TSrv extends ExtApiService,
     TRes extends ResType
-  >(params: ServiceConfigMl<TBody, TListingRes, TListingDb, TReqFxn, TSrv, TRes>) {
+  >(
+    params: Omit<
+      ServiceConfigMl<TBody, TListingRes, TListingDb, TReqFxn, TSrv, TRes>,
+      "fetchAndInsert"
+    >
+  ) {
     return new ServiceConfigMl<TBody, TListingRes, TListingDb, TReqFxn, TSrv, TRes>(
       params.serviceName,
       params.fetch,
