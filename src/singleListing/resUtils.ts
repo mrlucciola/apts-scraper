@@ -2,14 +2,6 @@ import { JSDOM } from "jsdom";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
-import { StreeteasyHtmlDetailSchema } from "./dbUtils/models";
-import { parsePriceHistory } from "./parseHtml/priceHistory";
-import { parseSavedUserCt } from "./parseHtml/parseElem";
-import {
-  parseActiveRentalStats,
-  parseFullAddress,
-  parseGqlItemPage,
-} from "./parseHtml/activeRentalStats";
 import type { IParseSingleListing } from "./interfaces";
 
 dayjs.extend(utc);

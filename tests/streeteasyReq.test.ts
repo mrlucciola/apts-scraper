@@ -57,11 +57,13 @@ describe("multilisting - streeteasy v6 sync", async () => {
 describe("multilisting - streeteasy v6 full flow", async () => {
   // @todo add: test("fail: validation", async () => {});
   // @todo add: test("fail: config", async () => {});
+  let res: Response;
   let resJson: GqlResJson = {} as GqlResJson;
   let listings: EdgeItem[] = [];
 
   test("successful fetch", async () => {
-    resJson = await fetchMultilisting(1, 50);
+    res = await fetchMultilisting();
+    // resJson = await fetchMultilisting();
   });
   test("validate", () => {
     listings = resJson.data.searchRentals.edges;

@@ -7,7 +7,10 @@ import type { MultiListingReqBody } from "../interfaces";
 import type { MultiListingRes } from "../response";
 import { graphqlApiUrl } from "../../local.singleListingDEPREC/viewerQueryGql";
 
-/** Only params are location, price and amenities */
+/**
+ * @deprecated needs refactor and move to streeteasy dir
+ * Only params are location, price and amenities
+ */
 const getMultiListing = async () => {
   try {
     // Configure request
@@ -15,7 +18,7 @@ const getMultiListing = async () => {
     const headers = { ...defaultHeaders, Cookie: multiListingCookie };
 
     const res = await axios.post<MultiListingRes>(graphqlApiUrl, reqBody, { headers });
-    console.warn('res',res)
+    console.warn("res", res);
 
     return res.data.data.search_organic_rentals;
   } catch (err) {

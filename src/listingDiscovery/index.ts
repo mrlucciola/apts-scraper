@@ -1,4 +1,5 @@
-import { createListing, findAllListings, findListingByListingId } from "../db/crud";
+import { createListing, findAllListings } from "../db/crud";
+import { ExtApiService } from "../general/enums";
 import getMultiListing from "./req";
 import { MultiListingResItem } from "./response";
 
@@ -6,6 +7,7 @@ import { MultiListingResItem } from "./response";
  * 1. Query existing listings - From DB
  * 2. Fetch listings to add/update - From API
  * 3. Add new listings and update existing listings - In DB
+ * 4. @todo When user-profiles are implemented - add support for custom search params, stored in DB
  */
 export const queryFetchUpdate = async () => {
   // 1. Query all existing listings from DB
@@ -32,6 +34,8 @@ export const queryFetchUpdate = async () => {
 
 /** */
 export const main = async () => {
+  // forEach.ExtApiService.options((srv) => {});
+  ExtApiService.options.forEach((srv) => {});
   await queryFetchUpdate();
   // @todo add loop to fetch on a timer
 };
