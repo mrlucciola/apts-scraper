@@ -20,20 +20,20 @@ export class ServiceConfigMl<
   TListingRes,
   TListingDb,
   // TFilterValue,
-  TReqParams,
+  TReqFxn extends (..._: any) => Promise<TRes>,
   TSrv extends ExtApiService,
-  TRes extends Response | AxiosResponse = Response
+  TRes
 > {
   constructor(
     public serviceName: TSrv,
-    public fetch: (...params: TReqParams[]) => TRes,
-    public logRequest: (res: TRes, parsedResBody?: any) => void,
-    public extractBodyFromRes: (body: TRes) => TBody,
+    public fetch: TReqFxn,
+    public logRequest: (res: TRes, parsedResBody?: any) => Promise<void>,
+    public extractBodyFromRes: (res: TRes) => TBody,
     public extractListingsFromBody: (body: TBody) => TListingRes[],
     public validateAndTransformToDbModel: (listings: TListingRes[]) => TListingDb[],
     // @todo figure this out - public filterListingsBy: (listing: TListingDb) => TFilterValue,
     public insertToDb: (listings: TListingDb[]) => void,
-    public handleRequestError?: (...params: any) => void
+    public handleRequestError?: (...params: any) => Promise<void>
   ) {}
 
   /**
@@ -42,7 +42,7 @@ export class ServiceConfigMl<
    *  - query: ReqBodyGql["query"] = defaultQuery,
    *  - queryVariables: Partial<ReqBodyGqlVariablesInput> = defaultQueryInputVariables
    */
-  async fetchAndInsert(...reqParams: TReqParams[]) {
+  async fetchAndInsert(...reqParams: Parameters<TReqFxn>) {
     const res = await this.fetch(...reqParams);
 
     await this.logRequest(res);
@@ -51,7 +51,7 @@ export class ServiceConfigMl<
 
     const body = await this.extractBodyFromRes(res);
 
-    const listingsRes = await this.extractListingsFromBody(body);
+    const listingsRes = this.extractListingsFromBody(body);
 
     const listingsDb = this.validateAndTransformToDbModel(listingsRes);
 
@@ -67,16 +67,16 @@ export class ServiceConfigMl<
     TListingRes,
     TListingDb,
     // TFilterValue,
-    TReqParams,
+    TReqFxn extends (..._: any) => Promise<TRes>,
     TSrv extends ExtApiService,
-    TRes extends Response | AxiosResponse = Response
+    TRes
   >(
-    params: ServiceConfigMl<TBody, TListingRes, TListingDb, TReqParams, TSrv, TRes>
-  ): ServiceConfigMl<TBody, TListingRes, TListingDb, TReqParams, TSrv, TRes> {
-    return new ServiceConfigMl<TBody, TListingRes, TListingDb, TReqParams, TSrv, TRes>(
-      //   params: ServiceConfigMl<TBody, TListingRes, TListingDb, TFilterValue, TSrv, TRes>
-      // ): ServiceConfigMl<TBody, TListingRes, TListingDb, TFilterValue, TSrv, TRes> {
-      //   return new ServiceConfigMl<TBody, TListingRes, TListingDb, TFilterValue, TSrv, TRes>(
+    params: ServiceConfigMl<TBody, TListingRes, TListingDb, TReqFxn, TSrv, TRes>
+  ): ServiceConfigMl<TBody, TListingRes, TListingDb, TReqFxn, TSrv, TRes> {
+    return new ServiceConfigMl<TBody, TListingRes, TListingDb, TReqFxn, TSrv, TRes>(
+      //   params: ServiceConfigMl<TBody, TListingRes, TListingDb, TFilterValue, TSrv>
+      // ): ServiceConfigMl<TBody, TListingRes, TListingDb, TFilterValue, TSrv> {
+      //   return new ServiceConfigMl<TBody, TListingRes, TListingDb, TFilterValue, TSrv>(
       params.serviceName,
       params.fetch,
       params.logRequest,

@@ -1,4 +1,5 @@
 import { createListing, findAllListings } from "../db/crud";
+import { ExtApiService } from "../general/enums";
 import getMultiListing from "./req";
 import { MultiListingResItem } from "./response";
 
@@ -33,6 +34,8 @@ export const queryFetchUpdate = async () => {
 
 /** */
 export const main = async () => {
+  // forEach.ExtApiService.options((srv) => {});
+  ExtApiService.options.forEach((srv) => {});
   await queryFetchUpdate();
   // @todo add loop to fetch on a timer
 };

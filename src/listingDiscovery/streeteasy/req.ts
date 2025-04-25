@@ -46,7 +46,7 @@ const defaultQueryInputVariables = ReqBodyGqlVariablesInput.parse(undefined);
 export const fetchMultilisting = async (
   query: ReqBodyGql["query"] = defaultQuery,
   queryVariables: Partial<ReqBodyGqlVariablesInput> = defaultQueryInputVariables
-) => {
+): Promise<Response> => {
   // 1. Config & send request
   const reqConfig: RequestInit = {
     ...reqConfigDefault,
@@ -56,12 +56,12 @@ export const fetchMultilisting = async (
       variables: { input: queryVariables as ReqBodyGqlVariablesInput },
     }),
   };
-  const res = await fetch(apiEndpoint, reqConfig);
+  return await fetch(apiEndpoint, reqConfig);
 
   // 2. Handle response
   // console.log("res", res);
 
-  const resJson: GqlResJson = await res.json();
+  // const resJson: GqlResJson = await res.json();
 
-  return resJson;
+  // return resJson;
 };
