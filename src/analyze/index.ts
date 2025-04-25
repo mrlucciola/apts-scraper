@@ -1,8 +1,8 @@
 import { findAllListings } from "../db/crud";
-import connectToDb from "../db/connectToDb";
+import { connectToListingsDb } from "../db/connectToDb";
 import { type Listing, type ListingModel } from "../db/models/listing";
 
-await connectToDb();
+await connectToListingsDb();
 
 const listingsDb = await findAllListings();
 

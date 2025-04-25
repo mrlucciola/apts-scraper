@@ -2,14 +2,14 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 // db
-import connectToDb from "../db/connectToDb";
+import { connectToListingsDb } from "../db/connectToDb";
 import { findAllListings } from "../db/crud";
 // req
 import { updateSingleListingStreeteasy } from "./externalApiUtils/streeteasy";
 // interfaces
 import type { ListingDoc } from "../db/models/listing";
 
-await connectToDb();
+await connectToListingsDb();
 
 dayjs.extend(utc);
 dayjs.extend(timezone);

@@ -1,6 +1,6 @@
 import { z } from "zod";
-import type { ExtApiService } from "../general/enums";
 import type { AxiosResponse } from "axios";
+import type { ExtApiService } from "../general/enums";
 
 /** @deprecated - this is for pre-v6 streeteasy */
 export const MultiListingReqBody = z.object({
@@ -15,19 +15,32 @@ export const MultiListingReqBody = z.object({
 /** @deprecated - this is for pre-v6 streeteasy */
 export type MultiListingReqBody = z.infer<typeof MultiListingReqBody>;
 
+export type ResType = Response | AxiosResponse;
+
+export type FetchReturnBody<TRes extends ResType = Response> = Promise<{
+  response: TRes;
+  reqConfig: RequestInit;
+}>;
+
+export type LogRequestFxn<TRes extends ResType, TBody> = (
+  res: TRes,
+  reqConfig: RequestInit,
+  bodyRes?: TBody | null | undefined
+) => Promise<void>;
+
 export class ServiceConfigMl<
   TBody,
   TListingRes,
   TListingDb,
   // TFilterValue,
-  TReqFxn extends (..._: any) => Promise<TRes>,
+  TReqFxn extends (..._: any) => FetchReturnBody<TRes>,
   TSrv extends ExtApiService,
-  TRes
+  TRes extends ResType
 > {
   constructor(
     public serviceName: TSrv,
     public fetch: TReqFxn,
-    public logRequest: (res: TRes, parsedResBody?: any) => Promise<void>,
+    public logRequest: LogRequestFxn<TRes, TBody>,
     public extractBodyFromRes: (res: TRes) => TBody,
     public extractListingsFromBody: (body: TBody) => TListingRes[],
     public validateAndTransformToDbModel: (listings: TListingRes[]) => TListingDb[],
@@ -43,13 +56,13 @@ export class ServiceConfigMl<
    *  - queryVariables: Partial<ReqBodyGqlVariablesInput> = defaultQueryInputVariables
    */
   async fetchAndInsert(...reqParams: Parameters<TReqFxn>) {
-    const res = await this.fetch(...reqParams);
+    const { reqConfig, response } = await this.fetch(...reqParams);
 
-    await this.logRequest(res);
+    const body = await this.extractBodyFromRes(response);
 
-    await (this.handleRequestError && this.handleRequestError(res));
+    await this.logRequest(response, reqConfig, body);
 
-    const body = await this.extractBodyFromRes(res);
+    await (this.handleRequestError && this.handleRequestError(response));
 
     const listingsRes = this.extractListingsFromBody(body);
 
