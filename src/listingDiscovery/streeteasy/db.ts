@@ -1,34 +1,31 @@
-import type { Dayjs } from "dayjs";
 import { ExtApiService } from "../../general/enums";
 import type { LogRequestFxn } from "../interfaces";
 import type { GqlResJson } from "./res";
+import RequestLogMultiListingModel, { type RequestLogMultiListing } from "../dbUtils/loggingModel";
+import log from "../../logger/loggerUtils";
 
-type RequestLogModel = Pick<
-  Response,
-  "headers" | "ok" | "redirected" | "status" | "statusText" | "type" | "url" | "bodyUsed"
-> & {
-  body: GqlResJson | null | undefined;
-  // dtAdded
-  //
-  serviceName: ExtApiService;
-  req: RequestInit;
-  dtCreated: string | Dayjs;
-};
-type RequestLogInsertModel = Omit<RequestLogModel, "dtCreated">;
-
-export const logRequestStreeteasy: LogRequestFxn<Response, GqlResJson> = async (
+export const logRequestMultiListingStreeteasy: LogRequestFxn<Response, GqlResJson> = async (
   res,
   reqConfig,
   bodyRes
 ) => {
   // Filter out unnecessary properties
   const { arrayBuffer, blob, body, clone, formData, json, text, ...resFiltered } = res;
-  const logInsert: RequestLogInsertModel = {
+  const logInsert: RequestLogMultiListing = {
     ...resFiltered,
     body: bodyRes,
     serviceName: ExtApiService.enum.streeteasy,
     req: reqConfig,
   };
 
-  // LoggingModel.create({});
+  try {
+    const newLogDoc = await RequestLogMultiListingModel.create(logInsert);
+
+    log.info(`Created request log for 'multi-listing': ${newLogDoc.id}`);
+    return newLogDoc;
+  } catch (e) {
+    log.error(e);
+    console.log("Error creating listing:", e);
+    throw e;
+  }
 };

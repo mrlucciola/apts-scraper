@@ -1,6 +1,7 @@
 import { z } from "zod";
 import type { AxiosResponse } from "axios";
 import type { ExtApiService } from "../general/enums";
+import type { RequestLogMultiListingDoc } from "./dbUtils/loggingModel";
 
 /** @deprecated - this is for pre-v6 streeteasy */
 export const MultiListingReqBody = z.object({
@@ -26,7 +27,15 @@ export type LogRequestFxn<TRes extends ResType, TBody> = (
   res: TRes,
   reqConfig: RequestInit,
   bodyRes?: TBody | null | undefined
-) => Promise<void>;
+) => Promise<RequestLogMultiListingDoc>;
+
+export type ExtractBodyFromResFxn<TRes extends ResType, TBody> = (res: TRes) => Promise<TBody>;
+
+export type ExtractListingsFromBodyFxn<TBody, TListingRes> = (body: TBody) => TListingRes[];
+
+export type ValidateAndTransformToDbModel<TListingRes, TListingDb> = (
+  listings: TListingRes[]
+) => TListingDb[];
 
 export class ServiceConfigMl<
   TBody,
@@ -41,11 +50,11 @@ export class ServiceConfigMl<
     public serviceName: TSrv,
     public fetch: TReqFxn,
     public logRequest: LogRequestFxn<TRes, TBody>,
-    public extractBodyFromRes: (res: TRes) => TBody,
-    public extractListingsFromBody: (body: TBody) => TListingRes[],
-    public validateAndTransformToDbModel: (listings: TListingRes[]) => TListingDb[],
+    public extractBodyFromRes: ExtractBodyFromResFxn<TRes, TBody>,
+    public extractListingsFromBody: ExtractListingsFromBodyFxn<TBody, TListingRes>,
+    public validateAndTransformToDbModel: ValidateAndTransformToDbModel<TListingRes, TListingDb>,
     // @todo figure this out - public filterListingsBy: (listing: TListingDb) => TFilterValue,
-    public insertToDb: (listings: TListingDb[]) => void,
+    public insertToDb: (listings: TListingDb[]) => Promise<void>,
     public handleRequestError?: (...params: any) => Promise<void>
   ) {}
 
@@ -80,16 +89,11 @@ export class ServiceConfigMl<
     TListingRes,
     TListingDb,
     // TFilterValue,
-    TReqFxn extends (..._: any) => Promise<TRes>,
+    TReqFxn extends (..._: any) => FetchReturnBody<TRes>,
     TSrv extends ExtApiService,
-    TRes
-  >(
-    params: ServiceConfigMl<TBody, TListingRes, TListingDb, TReqFxn, TSrv, TRes>
-  ): ServiceConfigMl<TBody, TListingRes, TListingDb, TReqFxn, TSrv, TRes> {
+    TRes extends ResType
+  >(params: ServiceConfigMl<TBody, TListingRes, TListingDb, TReqFxn, TSrv, TRes>) {
     return new ServiceConfigMl<TBody, TListingRes, TListingDb, TReqFxn, TSrv, TRes>(
-      //   params: ServiceConfigMl<TBody, TListingRes, TListingDb, TFilterValue, TSrv>
-      // ): ServiceConfigMl<TBody, TListingRes, TListingDb, TFilterValue, TSrv> {
-      //   return new ServiceConfigMl<TBody, TListingRes, TListingDb, TFilterValue, TSrv>(
       params.serviceName,
       params.fetch,
       params.logRequest,
