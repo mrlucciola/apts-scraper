@@ -1,6 +1,6 @@
 import { findAllListings } from "../db/crud";
 import { connectToListingsDb } from "../db/connectToDb";
-import { type Listing, type ListingModel } from "../db/models/listing";
+import { type Listing, type ListingModel } from "../db/models/listingDeprec";
 
 await connectToListingsDb();
 

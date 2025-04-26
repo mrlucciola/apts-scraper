@@ -1,5 +1,5 @@
-import type { Listing } from "../../db/models/listing";
-import ListingModel from "../../db/models/listing";
+import type { Listing } from "../../db/models/listingDeprec";
+import ListingModel from "../../db/models/listingDeprec";
 import { ExtApiService } from "../../general/enums";
 import log from "../../logger/loggerUtils";
 import type { RequestLogMultiListing } from "../dbUtils/loggingModel";

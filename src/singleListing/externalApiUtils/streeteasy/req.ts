@@ -4,7 +4,7 @@ import { zNumeric } from "../../../utils/zod";
 import { newFilepath } from "../../resUtils";
 import { ZStreeteasyListingUrl } from "./interfaces";
 import type { IFetchSingleListing } from "../../interfaces";
-import type { ListingDoc } from "../../../db/models/listing";
+import type { ListingDoc } from "../../../db/models/listingDeprec";
 
 /** Single listing */
 export const reqHeadersStreeteasy: HeadersInit = {

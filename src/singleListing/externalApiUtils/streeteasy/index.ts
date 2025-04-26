@@ -1,4 +1,4 @@
-import type { Listing } from "../../../db/models/listing";
+import type { Listing } from "../../../db/models/listingDeprec";
 import { StreeteasyHtmlDetailSchema } from "../../dbUtils/models";
 import { UpdateDocFromSingleListing, type ITransformSingleListing } from "../../interfaces";
 import {

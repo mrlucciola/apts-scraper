@@ -1,5 +1,5 @@
 import log from "../logger/loggerUtils";
-import ListingModel, { Listing, type ListingDoc, type ListingKey } from "./models/listing";
+import ListingModel, { Listing, type ListingDoc, type ListingKey } from "./models/listingDeprec";
 
 export const createListing = async (input: Partial<Listing>) => {
   try {

@@ -7,7 +7,7 @@ import { findAllListings } from "../db/crud";
 // req
 import { updateSingleListingStreeteasy } from "./externalApiUtils/streeteasy";
 // interfaces
-import type { ListingDoc } from "../db/models/listing";
+import type { ListingDoc } from "../db/models/listingDeprec";
 
 await connectToListingsDb();
 

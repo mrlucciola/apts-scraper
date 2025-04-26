@@ -4,7 +4,7 @@ import { fetchMultilisting } from "../src/listingDiscovery/streeteasy/req";
 // test data
 import { resJsonV6 } from "../src/listingDiscovery/streeteasy/local.testRes";
 import { EdgeItem, type GqlResJson } from "../src/listingDiscovery/streeteasy/res";
-import ListingModel, { type Listing } from "../src/db/models/listing";
+import ListingModel, { type Listing } from "../src/db/models/listingDeprec";
 import { createListing } from "../src/db/crud";
 
 // test("expired api key - single listing", async () => {
