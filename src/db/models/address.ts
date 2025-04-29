@@ -20,7 +20,7 @@ export const AddressDb = z.object({
   unit: z.string().nullish(), // "2a",
   zipCode: z.string().optional(), // "10012",
 
-  longitude: z.number(),
-  latitude: z.number(),
+  longitude: z.number().optional(),
+  latitude: z.number().optional(),
 });
 export type AddressDb = z.infer<typeof AddressDb>;

@@ -10,18 +10,17 @@ export const edgeNodeToListingAdapter = (input: EdgeNode): ListingFields => ({
   urlPath: input.urlPath,
 
   address: {
-    region: input.areaName,
-    latitude: input.geoPoint.latitude,
-    longitude: input.geoPoint.longitude,
+    ...input.address,
+    region: input.region,
     unit: input.unit,
     street: input.street,
   },
 
-  broker: { agency: input.sourceGroupLabel },
+  broker: { agency: input.agency },
 
-  bedCt: input.bedroomCount,
-  fullBathCt: input.fullBathroomCount,
-  halfBathCt: input.halfBathroomCount,
+  bedCt: input.bedCt,
+  fullBathCt: input.fullBathCt,
+  halfBathCt: input.halfBathCt,
 });
 
 export const EdgeNode = ListingFields.pick({
@@ -31,24 +30,21 @@ export const EdgeNode = ListingFields.pick({
   noFee: true,
   status: true,
   urlPath: true,
+  // roomCt:true
+  bedCt: true,
+  fullBathCt: true,
+  halfBathCt: true,
 })
   .required()
   .extend({
     // Renamed fields
-    bedroomCount: ListingFields.shape.bedCt.unwrap(), // 0
-    fullBathroomCount: ListingFields.shape.fullBathCt.unwrap(), // 1
-    halfBathroomCount: ListingFields.shape.halfBathCt.unwrap(), // 0
-    sourceGroupLabel: ListingFields.shape.broker.unwrap().shape.agency, // "Realty Express LaBarbera"
+    agency: ListingFields.shape.broker.unwrap().shape.agency, // "Realty Express LaBarbera"
 
     // Address fields
-    areaName: ListingFields.shape.address.shape.region, // "Hoboken"
+    address: ListingFields.shape.address.partial(),
+    region: ListingFields.shape.address.shape.region, // "Hoboken"
     street: ListingFields.shape.address.shape.street, // "356 1st Street",
     unit: ListingFields.shape.address.shape.unit, // "1R",
-    geoPoint: ListingFields.shape.address.pick({ latitude: true, longitude: true }), // 40.7383, -74.036
-
-    // Unused fields
-    leadMedia: z.object({ photo: z.object({ key: z.string().nullish() }).nullish() }).nullish(), // "6aee733e6dd2097652c329da981fc8a0"
-    relloExpress: z.any(), // null
   });
 export type EdgeNode = z.infer<typeof EdgeNode>;
 

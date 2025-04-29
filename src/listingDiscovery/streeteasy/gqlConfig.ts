@@ -57,39 +57,6 @@ query GetListingRental($input: SearchRentalsInput!) {
       ... on OrganicRentalEdge {
         node {
           id
-          areaName
-          bedroomCount
-          buildingType
-          fullBathroomCount
-          geoPoint {
-            latitude
-            longitude
-          }
-          halfBathroomCount
-          noFee
-          price
-          sourceGroupLabel
-          status
-          street
-          unit
-          urlPath
-        }
-      }
-    }
-  }
-}
-`;
-const gqlQueryTestAlias = `
-query GetListingRental($input: SearchRentalsInput!) {
-  searchRentals(input: $input) {
-    search {
-      criteria
-    }
-    totalCount
-    edges {
-      ... on OrganicRentalEdge {
-        node {
-          id
           buildingType
           noFee
           price
@@ -102,8 +69,7 @@ query GetListingRental($input: SearchRentalsInput!) {
           bedCt: bedroomCount
           fullBathCt: fullBathroomCount
           halfBathCt: halfBathroomCount
-          latitude: geoPoint { latitude }
-          longitude: geoPoint { longitude }
+          address: geoPoint { latitude, longitude } 
           agency: sourceGroupLabel
         }
       }
@@ -160,7 +126,7 @@ export const ReqBodyGql = z.object({
    * @todo add validation
    */
   // query: z.string().min(1).catch(gqlQuery),
-  query: z.string().min(1).catch(gqlQueryTestAlias),
+  query: z.string().min(1).catch(gqlQuery),
   variables: ReqBodyGqlVariables,
 });
 export type ReqBodyGql = z.infer<typeof ReqBodyGql>;

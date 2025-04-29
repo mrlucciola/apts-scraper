@@ -3,9 +3,9 @@ import { describe, expect, test } from "bun:test";
 import { streeteasyMultiListingConfig } from "../src/listingDiscovery/streeteasy/parse";
 // test data
 // import { resJsonV6 } from "../src/listingDiscovery/streeteasy/local.testRes";
-import { EdgeItem, type GqlResJson } from "../src/listingDiscovery/streeteasy/res";
-// import ListingModel, { type Listing } from "../src/db/models/listing";
-import { type Listing } from "../src/db/models/listing";
+import { EdgeItem, EdgeNode, GqlResJson } from "../src/listingDiscovery/streeteasy/res";
+import ListingModel, { Listing, ListingFields } from "../src/db/models/listing";
+import { ExtApiService } from "../src/general/enums";
 // import { createListing } from "../src/db/crud";
 
 // test("expired api key - single listing", async () => {
@@ -58,32 +58,48 @@ import { type Listing } from "../src/db/models/listing";
 describe("multilisting - streeteasy v6 full flow", async () => {
   // @todo add: test("fail: validation", async () => {});
   // @todo add: test("fail: config", async () => {});
-  let res: Response;
-  let resJson: GqlResJson;
-  let listings: EdgeItem[];
-  let listingsDb: Listing[];
+  let res: Response | undefined;
+  let resJson: GqlResJson | undefined;
+  let listings: EdgeItem[] | undefined;
+  let listingsDb: Listing[] | undefined;
 
   test("successful fetch", async () => {
     const { reqConfig, response } = await streeteasyMultiListingConfig.fetch();
     res = response;
+    expect(
+      res.status,
+      JSON.stringify({ status: res.status, message: res.statusText })
+    ).toBeLessThan(300);
   });
   test("successful extract body from res", async () => {
+    if (!res) throw new Error(`'res' is undefined`);
+
     resJson = await streeteasyMultiListingConfig.extractBodyFromRes(res);
-    console.log("res JSON", resJson);
+    console.log(resJson.data.searchRentals.edges[0].node);
+    // GqlResJson.parse(resJson);
   });
-  test("successful convert resjson to listings", () => {
+  test("successful convert resJson to listings", () => {
+    if (!resJson) throw new Error(`'resJson' is undefined`);
+
     listings = streeteasyMultiListingConfig.extractListingsFromBody(resJson);
+    listings.forEach((l) => {
+      EdgeItem.parse(l);
+    });
   });
   test("successful validation and transformation to db model", async () => {
+    if (!listings) throw new Error(`'listings' is undefined`);
+
     listingsDb = streeteasyMultiListingConfig.validateAndTransformToDbModel(listings);
-  });
-  test("validate", () => {
-    listings = resJson.data.searchRentals.edges;
-    console.log("listings", listings.length);
-    console.log("lists", listings[0]);
-    for (let idx = 0; idx < listings.length; idx++) {
-      const listing = listings[idx];
-      expect(EdgeItem.safeParse(listing).success).toBeTrue();
-    }
+    listingsDb.forEach((l) => {
+      const validation = ListingFields.safeParse(l.current);
+      if (!validation.success) {
+        console.error(l.current);
+      }
+
+      expect(validation.success, JSON.stringify(validation.error?.errors));
+      ExtApiService.options.forEach((o) => {
+        ListingFields.parse(l.sources[o]);
+      });
+    });
   });
 });
