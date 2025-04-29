@@ -17,7 +17,7 @@ import { apiEndpoint, defaultQuery, reqConfigDefault } from "./reqConfig";
 import { edgeNodeToListingAdapter, type GqlResJson } from "./res";
 
 type TBody = GqlResJson;
-type TListingRes = GqlResJson["data"]["searchRentals"]["edges"][number];
+type TListingRes = NonNullable<GqlResJson["data"]>["searchRentals"]["edges"][number];
 type TReqFxn = (
   query?: ReqBodyGql["query"],
   queryVariables?: Partial<ReqBodyGqlVariablesInput>
@@ -71,8 +71,11 @@ const logRequest: LogRequestFxn<TRes, TBody> = async (res, reqConfig, bodyRes) =
   }
 };
 
-const extractListingsFromBody: ExtractListingsFromBodyFxn<TBody, TListingRes> = (body) =>
-  body.data.searchRentals.edges;
+const extractListingsFromBody: ExtractListingsFromBodyFxn<TBody, TListingRes> = (body) => {
+  if (body.errors || !body.data) throw new Error(JSON.stringify(body.errors));
+
+  return body.data.searchRentals.edges;
+};
 
 /**
  * @deprecated Needs to be updated to new DB model for `Listing`

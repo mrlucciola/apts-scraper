@@ -1,0 +1,326 @@
+// V6 API - https://api-v6.streeteasy.com/ (POST)
+{
+  "data": {
+    "__type": {
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": "ID",
+              "kind": "SCALAR",
+            },
+          },
+        },
+        {
+          "name": "areaName",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": "String",
+              "kind": "SCALAR",
+            },
+          },
+        },
+        {
+          "name": "availableAt",
+          "type": {
+            "name": "Date",
+            "kind": "SCALAR",
+            "ofType": null,
+          },
+        },
+        {
+          "name": "bedroomCount",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": "Int",
+              "kind": "SCALAR",
+            },
+          },
+        },
+        {
+          "name": "buildingType",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": "BuildingType",
+              "kind": "ENUM",
+            },
+          },
+        },
+        {
+          "name": "fullBathroomCount",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": "Int",
+              "kind": "SCALAR",
+            },
+          },
+        },
+        {
+          "name": "furnished",
+          "type": {
+            "name": "Boolean",
+            "kind": "SCALAR",
+            "ofType": null,
+          },
+        },
+        {
+          "name": "geoPoint",
+          "type": {
+            "name": "Geo",
+            "kind": "OBJECT",
+            "ofType": null,
+          },
+        },
+        {
+          "name": "halfBathroomCount",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": "Int",
+              "kind": "SCALAR",
+            },
+          },
+        },
+        {
+          "name": "hasTour3d",
+          "type": {
+            "name": "Boolean",
+            "kind": "SCALAR",
+            "ofType": null,
+          },
+        },
+        {
+          "name": "hasVideos",
+          "type": {
+            "name": "Boolean",
+            "kind": "SCALAR",
+            "ofType": null,
+          },
+        },
+        {
+          "name": "interestingPriceDelta",
+          "type": {
+            "name": "Int",
+            "kind": "SCALAR",
+            "ofType": null,
+          },
+        },
+        {
+          "name": "isNewDevelopment",
+          "type": {
+            "name": "Boolean",
+            "kind": "SCALAR",
+            "ofType": null,
+          },
+        },
+        {
+          "name": "leadMedia",
+          "type": {
+            "name": "LeadMedia",
+            "kind": "OBJECT",
+            "ofType": null,
+          },
+        },
+        {
+          "name": "leaseTermMonths",
+          "type": {
+            "name": "Float",
+            "kind": "SCALAR",
+            "ofType": null,
+          },
+        },
+        {
+          "name": "livingAreaSize",
+          "type": {
+            "name": "Int",
+            "kind": "SCALAR",
+            "ofType": null,
+          },
+        },
+        {
+          "name": "mediaAssetCount",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": "Int",
+              "kind": "SCALAR",
+            },
+          },
+        },
+        {
+          "name": "monthsFree",
+          "type": {
+            "name": "Float",
+            "kind": "SCALAR",
+            "ofType": null,
+          },
+        },
+        {
+          "name": "noFee",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": "Boolean",
+              "kind": "SCALAR",
+            },
+          },
+        },
+        {
+          "name": "netEffectivePrice",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": "Int",
+              "kind": "SCALAR",
+            },
+          },
+        },
+        {
+          "name": "offMarketAt",
+          "type": {
+            "name": "Date",
+            "kind": "SCALAR",
+            "ofType": null,
+          },
+        },
+        {
+          "name": "photos",
+          "type": {
+            "name": null,
+            "kind": "LIST",
+            "ofType": {
+              "name": "Photo",
+              "kind": "OBJECT",
+            },
+          },
+        },
+        {
+          "name": "price",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": "Int",
+              "kind": "SCALAR",
+            },
+          },
+        },
+        {
+          "name": "sourceGroupLabel",
+          "type": {
+            "name": "String",
+            "kind": "SCALAR",
+            "ofType": null,
+          },
+        },
+        {
+          "name": "sourceType",
+          "type": {
+            "name": "ListingSourceType",
+            "kind": "ENUM",
+            "ofType": null,
+          },
+        },
+        {
+          "name": "state",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": "String",
+              "kind": "SCALAR",
+            },
+          },
+        },
+        {
+          "name": "status",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": "RentalStatus",
+              "kind": "ENUM",
+            },
+          },
+        },
+        {
+          "name": "street",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": "String",
+              "kind": "SCALAR",
+            },
+          },
+        },
+        {
+          "name": "upcomingOpenHouse",
+          "type": {
+            "name": "OpenHouseDigest",
+            "kind": "OBJECT",
+            "ofType": null,
+          },
+        },
+        {
+          "name": "unit",
+          "type": {
+            "name": "String",
+            "kind": "SCALAR",
+            "ofType": null,
+          },
+        },
+        {
+          "name": "displayUnit",
+          "type": {
+            "name": "String",
+            "kind": "SCALAR",
+            "ofType": null,
+          },
+        },
+        {
+          "name": "zipCode",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": "String",
+              "kind": "SCALAR",
+            },
+          },
+        },
+        {
+          "name": "relloExpress",
+          "type": {
+            "name": "RelloExpress",
+            "kind": "OBJECT",
+            "ofType": null,
+          },
+        },
+        {
+          "name": "urlPath",
+          "type": {
+            "name": "String",
+            "kind": "SCALAR",
+            "ofType": null,
+          },
+        }
+      ],
+    },
+  },
+}

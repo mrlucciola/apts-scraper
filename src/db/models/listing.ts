@@ -53,8 +53,11 @@ export const ListingFields = UnitInfo.merge(BuildingInfo).extend({
 
   broker: BrokerInfo.optional(),
 
-  daysOnMarket: z.number().optional(),
-  availableAt: zDayjs.optional(), // "2024-11-12",
+  daysOnMarket: z.number().nullish(),
+  availableAt: zDayjs.nullish(), // "2024-11-12",
+
+  displayUnit: z.string().nullish(),
+  furnished: z.boolean().nullish(),
 
   /** From `log` collection */
   updateId: z.string().optional(),

@@ -6,6 +6,7 @@ import { streeteasyMultiListingConfig } from "../src/listingDiscovery/streeteasy
 import { EdgeItem, EdgeNode, GqlResJson } from "../src/listingDiscovery/streeteasy/res";
 import ListingModel, { Listing, ListingFields } from "../src/db/models/listing";
 import { ExtApiService } from "../src/general/enums";
+import { newReqBodyMlStreeteasy } from "../src/listingDiscovery/streeteasy/gqlConfig";
 // import { createListing } from "../src/db/crud";
 
 // test("expired api key - single listing", async () => {
@@ -65,18 +66,17 @@ describe("multilisting - streeteasy v6 full flow", async () => {
 
   test("successful fetch", async () => {
     const { reqConfig, response } = await streeteasyMultiListingConfig.fetch();
-    res = response;
     expect(
-      res.status,
-      JSON.stringify({ status: res.status, message: res.statusText })
-    ).toBeLessThan(300);
+      response.status < 300,
+      JSON.stringify({ status: response.status, message: response.statusText })
+    );
+    res = response;
   });
   test("successful extract body from res", async () => {
     if (!res) throw new Error(`'res' is undefined`);
 
     resJson = await streeteasyMultiListingConfig.extractBodyFromRes(res);
-    console.log(resJson.data.searchRentals.edges[0].node);
-    // GqlResJson.parse(resJson);
+    console.log(resJson.errors || resJson.data?.searchRentals.edges[0].node);
   });
   test("successful convert resJson to listings", () => {
     if (!resJson) throw new Error(`'resJson' is undefined`);

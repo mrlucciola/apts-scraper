@@ -42,10 +42,6 @@ export type ReqBodyGqlVariablesInput = z.infer<typeof ReqBodyGqlVariablesInput>;
 export const ReqBodyGqlVariables = z.object({ input: ReqBodyGqlVariablesInput });
 export type ReqBodyGqlVariables = z.infer<typeof ReqBodyGqlVariables>;
 
-/**
- * @note See original stringified query - note the prepended and postpended whitespace:
- * `"\\n  query GetListingRental($input: SearchRentalsInput!) {\\n    searchRentals(input: $input) {\\n      search {\\n        criteria\\n      }\\n      totalCount\\n      edges {\\n        ... on OrganicRentalEdge {\\n          node {\\n            id\\n            areaName\\n            bedroomCount\\n            buildingType\\n            fullBathroomCount\\n            geoPoint {\\n              latitude\\n              longitude\\n            }\\n            halfBathroomCount\\n            noFee\\n            leadMedia {\\n              photo {\\n                  key\\n              }\\n            }\\n            price\\n            relloExpress {\\n              ctaEnabled\\n              link\\n              rentalId\\n            }\\n            sourceGroupLabel\\n            status\\n            street\\n            unit\\n            urlPath\\n          }\\n        }\\n      }\\n    }\\n  }\\n"`
- */
 const gqlQuery = `
 query GetListingRental($input: SearchRentalsInput!) {
   searchRentals(input: $input) {
@@ -56,65 +52,39 @@ query GetListingRental($input: SearchRentalsInput!) {
     edges {
       ... on OrganicRentalEdge {
         node {
-          id
-          buildingType
-          noFee
-          price
-          status
-          street
-          unit
-          urlPath
-
-          region: areaName
-          bedCt: bedroomCount
-          fullBathCt: fullBathroomCount
-          halfBathCt: halfBathroomCount
           address: geoPoint { latitude, longitude } 
           agency: sourceGroupLabel
-        }
-      }
-    }
-  }
-}
-`;
-const gqlQueryTestNew = `
-query GetListingRental($input: SearchRentalsInput!) {
-  searchRentals(input: $input) {
-    search {
-      criteria
-    }
-    totalCount
-    edges {
-      ... on OrganicRentalEdge {
-        node {
-          id
+          availableAt
+          bedCt: bedroomCount
           buildingType
+          displayUnit
+          fullBathCt: fullBathroomCount
+          furnished
+          halfBathCt: halfBathroomCount
+          hasTour3d
+          hasVideos
+          id
+          interestingPriceDelta
+          isNewDevelopment
+          # leadMedia
+          leaseTermMonths
+          livingAreaSize
+          mediaAssetCount
+          monthsFree
+          netEffectivePrice
           noFee
+          offMarketAt
+          # photos
           price
+          region: areaName
+          sourceType
+          state
           status
           street
           unit
+          # upcomingOpenHouse { ... } # unknown fields
           urlPath
-
-
-
-          roomCount
-          livingAreaSize
-          lotAreaSize
-          description
-          daysOnMarket
-          availableAt
-
-          recentListingsPriceStats
-          rentalEventsOfInterest
-          propertyHistory
-          propertyDetails
-
-          listing
-          listing.daysOnMarket
-          listing.propertyDetails
-          listing.propertyHistory
-          listing.pricing
+          zipCode
         }
       }
     }
