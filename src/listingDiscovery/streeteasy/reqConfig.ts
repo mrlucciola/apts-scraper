@@ -36,4 +36,3 @@ export const reqConfigDefault: RequestInit = {
 };
 
 export const defaultQuery = ReqBodyGql.shape.query.parse(undefined);
-export const defaultQueryInputVariables = ReqBodyGqlVariablesInput.parse(undefined);

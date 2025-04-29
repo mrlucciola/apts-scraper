@@ -1,5 +1,4 @@
-import type { Listing } from "../../db/models/listingDeprec";
-import ListingModel from "../../db/models/listingDeprec";
+import ListingModel, { type Listing } from "../../db/models/listingDeprec";
 import { ExtApiService } from "../../general/enums";
 import log from "../../logger/loggerUtils";
 import type { RequestLogMultiListing } from "../dbUtils/loggingModel";
@@ -13,34 +12,27 @@ import {
   type LogRequestFxn,
   type ValidateAndTransformToDbModel,
 } from "../interfaces";
-import {
-  newReqBodyMlStreeteasy,
-  type ReqBodyGql,
-  type ReqBodyGqlVariablesInput,
-} from "./gqlConfig";
-import {
-  apiEndpoint,
-  defaultQuery,
-  defaultQueryInputVariables,
-  reqConfigDefault,
-} from "./reqConfig";
+import { ReqBodyGqlVariablesInput, newReqBodyMlStreeteasy, type ReqBodyGql } from "./gqlConfig";
+import { apiEndpoint, defaultQuery, reqConfigDefault } from "./reqConfig";
 import type { GqlResJson } from "./res";
 
 type TBody = GqlResJson;
 type TListingRes = GqlResJson["data"]["searchRentals"]["edges"][number];
-type TListingDb = Omit<Partial<Listing>, "rental"> & Partial<{ rental: RentalDb }>;
 type TReqFxn = (
   query?: ReqBodyGql["query"],
   queryVariables?: Partial<ReqBodyGqlVariablesInput>
 ) => FetchReturnBody<TRes>;
 type TRes = Response;
-// TFilterValue,
-
+/** @deprecated MIGRATE TO NEW LISTING MODEL */
+type TListingDb = Omit<Partial<Listing>, "rental"> & Partial<{ rental: RentalDb }>;
+/** @deprecated MIGRATE TO NEW LISTING MODEL */
 type RentalDb = Omit<Partial<Listing["rental"]>, "building" | "address"> & {
   building: Partial<Listing["rental"]["building"]>;
   address: Partial<Listing["rental"]["address"]>;
 };
+// TFilterValue,
 
+const defaultQueryInputVariables = ReqBodyGqlVariablesInput.parse(undefined);
 /** @todo
  * @deprecated add customizable gql query-interface
  */
@@ -49,13 +41,10 @@ const fetchStreeteasy: TReqFxn = async (
   queryVariables: Partial<ReqBodyGqlVariablesInput> = defaultQueryInputVariables
 ): FetchReturnBody => {
   // 1. Config & send request
+  const input: ReqBodyGqlVariablesInput = { ...defaultQueryInputVariables, ...queryVariables };
   const reqConfig: RequestInit = {
     ...reqConfigDefault,
-    body: newReqBodyMlStreeteasy({
-      query,
-      /** @todo Remove type bypass */
-      variables: { input: queryVariables as ReqBodyGqlVariablesInput },
-    }),
+    body: newReqBodyMlStreeteasy({ query, variables: { input } }),
   };
 
   const response = await fetch(apiEndpoint, reqConfig);
@@ -65,7 +54,8 @@ const fetchStreeteasy: TReqFxn = async (
 
 const extractBodyFromRes: ExtractBodyFromResFxn<TRes, TBody> = async (res) => await res.json();
 
-const logRequest: LogRequestFxn<Response, GqlResJson> = async (res, reqConfig, bodyRes) => {
+// LogRequestFxn<TRes extends ResType, TBody>
+const logRequest: LogRequestFxn<TRes, TBody> = async (res, reqConfig, bodyRes) => {
   // Filter out unnecessary properties
   const { arrayBuffer, blob, body, clone, formData, json, text, ...resFiltered } = res;
   const logInsert: RequestLogMultiListing = {
@@ -144,6 +134,6 @@ export const streeteasyMultiListingConfig = ServiceConfigMl.new({
   // parse
   extractBodyFromRes,
   extractListingsFromBody,
-  validateAndTransformToDbModel: validateAndTransformToDbModel,
+  validateAndTransformToDbModel,
   insertToDb,
 });
