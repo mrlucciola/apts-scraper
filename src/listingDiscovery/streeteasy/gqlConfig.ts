@@ -11,7 +11,7 @@ export const ReqBodyGqlFilters = z.object({
   rentalStatus: z.enum(["ACTIVE"]).default("ACTIVE"),
   areas: z.array(z.number()).default([1004000]), // Hoboken = 1004000
   /** @todo add more filters */
-  price: ReqBodyGqlFiltersPrice.default(ReqBodyGqlFiltersPrice.parse(undefined)),
+  price: ReqBodyGqlFiltersPrice.default(ReqBodyGqlFiltersPrice.parse({})),
 });
 export type ReqBodyGqlFilters = z.infer<typeof ReqBodyGqlFilters>;
 
@@ -24,10 +24,10 @@ export const ReqBodyGqlSorting = z.object({
 export type ReqBodyGqlSorting = z.infer<typeof ReqBodyGqlSorting>;
 
 export const ReqBodyGqlVariablesInput = z.object({
-  filters: ReqBodyGqlFilters,
+  filters: ReqBodyGqlFilters.default(ReqBodyGqlFilters.parse({})),
   page: z.number().default(1),
   perPage: z.number().default(500),
-  sorting: ReqBodyGqlSorting.default(ReqBodyGqlSorting.parse(undefined)),
+  sorting: ReqBodyGqlSorting.default(ReqBodyGqlSorting.parse({})),
 
   userSearchToken: z.string().default(process.env.STREETEASY_GQL_USER_SEARCH_TOKEN as string),
   /**
@@ -67,17 +67,7 @@ query GetListingRental($input: SearchRentalsInput!) {
           }
           halfBathroomCount
           noFee
-          leadMedia {
-            photo {
-              key
-            }
-          }
           price
-          relloExpress {
-            ctaEnabled
-            link
-            rentalId
-          }
           sourceGroupLabel
           status
           street
@@ -89,11 +79,88 @@ query GetListingRental($input: SearchRentalsInput!) {
   }
 }
 `;
+const gqlQueryTestAlias = `
+query GetListingRental($input: SearchRentalsInput!) {
+  searchRentals(input: $input) {
+    search {
+      criteria
+    }
+    totalCount
+    edges {
+      ... on OrganicRentalEdge {
+        node {
+          id
+          buildingType
+          noFee
+          price
+          status
+          street
+          unit
+          urlPath
+
+          region: areaName
+          bedCt: bedroomCount
+          fullBathCt: fullBathroomCount
+          halfBathCt: halfBathroomCount
+          latitude: geoPoint { latitude }
+          longitude: geoPoint { longitude }
+          agency: sourceGroupLabel
+        }
+      }
+    }
+  }
+}
+`;
+const gqlQueryTestNew = `
+query GetListingRental($input: SearchRentalsInput!) {
+  searchRentals(input: $input) {
+    search {
+      criteria
+    }
+    totalCount
+    edges {
+      ... on OrganicRentalEdge {
+        node {
+          id
+          buildingType
+          noFee
+          price
+          status
+          street
+          unit
+          urlPath
+
+
+
+          roomCount
+          livingAreaSize
+          lotAreaSize
+          description
+          daysOnMarket
+          availableAt
+
+          recentListingsPriceStats
+          rentalEventsOfInterest
+          propertyHistory
+          propertyDetails
+
+          listing
+          listing.daysOnMarket
+          listing.propertyDetails
+          listing.propertyHistory
+          listing.pricing
+        }
+      }
+    }
+  }
+}
+`;
 export const ReqBodyGql = z.object({
   /** GQL syntax string
    * @todo add validation
    */
-  query: z.string().min(1).catch(gqlQuery),
+  // query: z.string().min(1).catch(gqlQuery),
+  query: z.string().min(1).catch(gqlQueryTestAlias),
   variables: ReqBodyGqlVariables,
 });
 export type ReqBodyGql = z.infer<typeof ReqBodyGql>;

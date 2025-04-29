@@ -1,35 +1,55 @@
 import { z } from "zod";
-import { zNumeric } from "../../utils/zod";
-import { BuildingType } from "../../streeteasyUtils/listingEnums";
+import { ListingFields } from "../../db/models/listing";
 
-export const EdgeNode = z.object({
-  id: zNumeric, // "4687718"
-  /** @note May be an enum */
-  areaName: z.string(), // "Hoboken"
-  /** @note Small integer */
-  bedroomCount: z.number().int(), // 0
-  /** @note Currently includes all observed values, there may be others however. */
-  buildingType: BuildingType, // "HOUSE"
-  /** @note Small integer */
-  fullBathroomCount: z.number().int(), // 1
-  geoPoint: z.object({
-    latitude: z.number(), // 40.7383
-    longitude: z.number(), // -74.036
-  }),
-  /** @note Small integer */
-  halfBathroomCount: z.number().int(), // 0
-  noFee: z.boolean().nullish(), // false
-  // "6aee733e6dd2097652c329da981fc8a0"
-  leadMedia: z.object({ photo: z.object({ key: z.string().nullish() }).nullish() }).nullable(),
-  price: z.number(), // 2300
-  relloExpress: z.any(), // null
-  sourceGroupLabel: z.string().nullable(), // "Realty Express LaBarbera"
-  /** @todo Incomplete enum */
-  status: z.enum(["ACTIVE"]), // "ACTIVE"
-  street: z.string(), // "356 1st Street",
-  unit: z.string().nullable(), // "1R",
-  urlPath: z.string(), // "/building/356-1-street-hoboken/1r",
+export const edgeNodeToListingAdapter = (input: EdgeNode): ListingFields => ({
+  id: input.id,
+  price: input.price,
+  buildingType: input.buildingType,
+  noFee: input.noFee,
+  status: input.status,
+  urlPath: input.urlPath,
+
+  address: {
+    region: input.areaName,
+    latitude: input.geoPoint.latitude,
+    longitude: input.geoPoint.longitude,
+    unit: input.unit,
+    street: input.street,
+  },
+
+  broker: { agency: input.sourceGroupLabel },
+
+  bedCt: input.bedroomCount,
+  fullBathCt: input.fullBathroomCount,
+  halfBathCt: input.halfBathroomCount,
 });
+
+export const EdgeNode = ListingFields.pick({
+  id: true,
+  price: true,
+  buildingType: true, // "HOUSE"
+  noFee: true,
+  status: true,
+  urlPath: true,
+})
+  .required()
+  .extend({
+    // Renamed fields
+    bedroomCount: ListingFields.shape.bedCt.unwrap(), // 0
+    fullBathroomCount: ListingFields.shape.fullBathCt.unwrap(), // 1
+    halfBathroomCount: ListingFields.shape.halfBathCt.unwrap(), // 0
+    sourceGroupLabel: ListingFields.shape.broker.unwrap().shape.agency, // "Realty Express LaBarbera"
+
+    // Address fields
+    areaName: ListingFields.shape.address.shape.region, // "Hoboken"
+    street: ListingFields.shape.address.shape.street, // "356 1st Street",
+    unit: ListingFields.shape.address.shape.unit, // "1R",
+    geoPoint: ListingFields.shape.address.pick({ latitude: true, longitude: true }), // 40.7383, -74.036
+
+    // Unused fields
+    leadMedia: z.object({ photo: z.object({ key: z.string().nullish() }).nullish() }).nullish(), // "6aee733e6dd2097652c329da981fc8a0"
+    relloExpress: z.any(), // null
+  });
 export type EdgeNode = z.infer<typeof EdgeNode>;
 
 export const EdgeItem = z.object({ node: EdgeNode });

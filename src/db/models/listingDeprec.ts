@@ -51,8 +51,4 @@ const ListingModel = getModelForClass(Listing, {
 /** @deprecated */
 export default ListingModel;
 /** @deprecated */
-export type ListingModel = typeof ListingModel;
-/** @deprecated */
 export type ListingDoc = DocumentType<Listing>;
-/** @deprecated */
-export type ListingKey = keyof Listing;

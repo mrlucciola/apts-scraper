@@ -1,4 +1,4 @@
-import { ReqBodyGql, ReqBodyGqlVariablesInput } from "./gqlConfig";
+import { ReqBodyGql } from "./gqlConfig";
 
 /** @todo move to reqConfig.ts */
 export const apiEndpoint = "https://api-v6.streeteasy.com/";

@@ -1,10 +1,10 @@
 import log from "../logger/loggerUtils";
-import ListingModel, { Listing, type ListingDoc, type ListingKey } from "./models/listingDeprec";
+import ListingModel, { Listing, type ListingDoc, type ListingKey } from "./models/listing";
 
 export const createListing = async (input: Partial<Listing>) => {
   try {
     const createdListing = await ListingModel.create(input);
-    log.info(`Created listing: ${createdListing.listing_id}`);
+    log.info(`Created listing: ${createdListing.current.id}`);
     return createdListing;
   } catch (error) {
     log.error(error);

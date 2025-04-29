@@ -1,4 +1,4 @@
-import ListingModel, { type Listing } from "../../db/models/listingDeprec";
+import ListingModel, { type Listing } from "../../db/models/listing";
 import { ExtApiService } from "../../general/enums";
 import log from "../../logger/loggerUtils";
 import type { RequestLogMultiListing } from "../dbUtils/loggingModel";
@@ -14,7 +14,7 @@ import {
 } from "../interfaces";
 import { ReqBodyGqlVariablesInput, newReqBodyMlStreeteasy, type ReqBodyGql } from "./gqlConfig";
 import { apiEndpoint, defaultQuery, reqConfigDefault } from "./reqConfig";
-import type { GqlResJson } from "./res";
+import { edgeNodeToListingAdapter, type GqlResJson } from "./res";
 
 type TBody = GqlResJson;
 type TListingRes = GqlResJson["data"]["searchRentals"]["edges"][number];
@@ -23,16 +23,10 @@ type TReqFxn = (
   queryVariables?: Partial<ReqBodyGqlVariablesInput>
 ) => FetchReturnBody<TRes>;
 type TRes = Response;
-/** @deprecated MIGRATE TO NEW LISTING MODEL */
-type TListingDb = Omit<Partial<Listing>, "rental"> & Partial<{ rental: RentalDb }>;
-/** @deprecated MIGRATE TO NEW LISTING MODEL */
-type RentalDb = Omit<Partial<Listing["rental"]>, "building" | "address"> & {
-  building: Partial<Listing["rental"]["building"]>;
-  address: Partial<Listing["rental"]["address"]>;
-};
+type TListingDb = Listing;
 // TFilterValue,
 
-const defaultQueryInputVariables = ReqBodyGqlVariablesInput.parse(undefined);
+const defaultQueryInputVariables = ReqBodyGqlVariablesInput.parse({});
 /** @todo
  * @deprecated add customizable gql query-interface
  */
@@ -88,40 +82,29 @@ const extractListingsFromBody: ExtractListingsFromBodyFxn<TBody, TListingRes> = 
 const validateAndTransformToDbModel: ValidateAndTransformToDbModel<TListingRes, TListingDb> = (
   listings
 ) =>
-  listings.map(({ node: l }) => ({
-    listing_id: l.id,
-    latitude: l.geoPoint.latitude,
-    longitude: l.geoPoint.longitude,
-    listed_price: l.price,
-    rental: {
-      id: l.id,
-      listingPrice: l.price,
-      building: { url: l.urlPath },
-      address: { unit: l.unit },
-      source: l.urlPath,
-      listingBaths: `${l.fullBathroomCount + Math.round((l.halfBathroomCount * 10) / 2) / 10}`,
-      listingBeds: `${l.bedroomCount}`,
-      listingAddress: `${l.street} ${l.unit}`,
-    },
-  }));
+  listings.map(({ node: l }) => {
+    const current: TListingDb["current"] = edgeNodeToListingAdapter(l);
+
+    return { current, sources: { streeteasy: current } };
+  });
 
 const insertToDb: InsertToDbFxn<TListingDb> = async (listings) => {
-  const listingIds = [...new Set(listings.map((l) => l.listing_id))];
+  const listingIds = [...new Set(listings.map((l) => l.current.id))];
 
   // Find all documents that match any of these IDs
   const existingListings = await ListingModel.find(
-    { listing_id: { $in: listingIds } },
+    { "current.id": { $in: listingIds } },
     // Only get the listing_id field
-    { listing_id: 1, _id: 0 }
+    { "current.id": 1, _id: 0 }
   );
 
   // Create a set of existing IDs for faster lookup
-  const existingIdsSet = new Set(existingListings.map((l) => l.listing_id));
+  const existingIdsSet = new Set(existingListings.map((l) => l.current.id));
 
   // Filter the API IDs to find those that don't exist in the database
   const missingIds = listingIds.filter((id) => !existingIdsSet.has(id!));
 
-  const filteredNewListings = listings.filter((l) => missingIds.includes(l.listing_id));
+  const filteredNewListings = listings.filter((l) => missingIds.includes(l.current.id));
 
   await ListingModel.insertMany(filteredNewListings);
 };
