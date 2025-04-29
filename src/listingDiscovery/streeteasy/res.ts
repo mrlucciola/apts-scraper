@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { zNumeric } from "../../utils/zod";
+import { BuildingType } from "../../streeteasyUtils/listingEnums";
 
 export const EdgeNode = z.object({
   id: zNumeric, // "4687718"
@@ -8,7 +9,7 @@ export const EdgeNode = z.object({
   /** @note Small integer */
   bedroomCount: z.number().int(), // 0
   /** @note Currently includes all observed values, there may be others however. */
-  buildingType: z.enum(["HOUSE", "CONDO", "UNKNOWN", "MULTIFAMILY", "RENTAL"]), // "HOUSE"
+  buildingType: BuildingType, // "HOUSE"
   /** @note Small integer */
   fullBathroomCount: z.number().int(), // 1
   geoPoint: z.object({
