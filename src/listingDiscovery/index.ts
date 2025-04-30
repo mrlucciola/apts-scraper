@@ -8,12 +8,13 @@ import { MultiListingResItem } from "./response";
  * 2. Fetch listings to add/update - From API
  * 3. Add new listings and update existing listings - In DB
  * 4. @todo When user-profiles are implemented - add support for custom search params, stored in DB
+ *
+ * @deprecated Support sources
  */
 export const queryFetchUpdate = async () => {
   // 1. Query all existing listings from DB
-  const listingsDb = await findAllListings(["listing_id"]);
-  const listingIdsDb = listingsDb.map((l) => l.listing_id);
-  const uniqueListingIdsDb = new Set(listingIdsDb);
+  const listingsDb = await findAllListings(["sources"]);
+  const listingIdsDb = listingsDb.map((l) => l.sources);
 
   // 2. Fetch new listings
   const listingsRes = await getMultiListing();
@@ -22,13 +23,14 @@ export const queryFetchUpdate = async () => {
   listingsRes?.forEach(async (listing) => {
     const validatedListing = MultiListingResItem.safeParse(listing);
 
-    const shouldAdd =
-      validatedListing.data && !uniqueListingIdsDb.has(validatedListing.data.listing_id);
-    const shouldUpdate =
-      validatedListing.data && uniqueListingIdsDb.has(validatedListing.data.listing_id);
-    if (shouldAdd) {
-      await createListing(validatedListing.data);
-    }
+    // const shouldAdd =
+    //   validatedListing.data && !uniqueListingIdsDb.has(validatedListing.data.listing_id);
+    // const shouldUpdate =
+    //   validatedListing.data && uniqueListingIdsDb.has(validatedListing.data.listing_id);
+    // if (shouldAdd) {
+    //   await createListing(validatedListing.data);
+    // }
+    throw new Error("Not complete. Need to support sources");
   });
 };
 

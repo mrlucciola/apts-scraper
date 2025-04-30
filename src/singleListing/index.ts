@@ -15,11 +15,11 @@ dayjs.extend(utc);
 dayjs.extend(timezone);
 
 export const fetchParseUpdateListing = async (listing: ListingDoc): Promise<void> => {
-  const hasStreeteasyId = !!listing.listing_id;
+  const hasStreeteasyId = !!listing.sources.streeteasy.id;
   /** @todo not yet implented */
-  const hasHotpadsId = false;
+  const hasHotpadsId = false; // !!listing.sources.hotpads.id
   /** @todo not yet implented */
-  const hasZillowId = false;
+  const hasZillowId = false; // !!listing.sources.zillow.id
   const hasNoIds = !hasStreeteasyId && !hasHotpadsId && !hasZillowId;
 
   if (hasNoIds) {
@@ -52,7 +52,6 @@ export const fetchParseUpdateAllListings = async () => {
 
   // @todo Sort by `detail.dtUpdated`
 
-  await listingsDb.forEach((lll) => lll);
   await listingsDb.forEach(fetchParseUpdateListing);
 };
 fetchParseUpdateAllListings();

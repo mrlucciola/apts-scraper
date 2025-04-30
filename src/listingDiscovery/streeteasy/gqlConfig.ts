@@ -11,7 +11,7 @@ export const ReqBodyGqlFilters = z.object({
   rentalStatus: z.enum(["ACTIVE"]).default("ACTIVE"),
   areas: z.array(z.number()).default([1004000]), // Hoboken = 1004000
   /** @todo add more filters */
-  price: ReqBodyGqlFiltersPrice.default(ReqBodyGqlFiltersPrice.parse(undefined)),
+  price: ReqBodyGqlFiltersPrice.default(ReqBodyGqlFiltersPrice.parse({})),
 });
 export type ReqBodyGqlFilters = z.infer<typeof ReqBodyGqlFilters>;
 
@@ -24,10 +24,10 @@ export const ReqBodyGqlSorting = z.object({
 export type ReqBodyGqlSorting = z.infer<typeof ReqBodyGqlSorting>;
 
 export const ReqBodyGqlVariablesInput = z.object({
-  filters: ReqBodyGqlFilters,
+  filters: ReqBodyGqlFilters.default(ReqBodyGqlFilters.parse({})),
   page: z.number().default(1),
   perPage: z.number().default(500),
-  sorting: ReqBodyGqlSorting.default(ReqBodyGqlSorting.parse(undefined)),
+  sorting: ReqBodyGqlSorting.default(ReqBodyGqlSorting.parse({})),
 
   userSearchToken: z.string().default(process.env.STREETEASY_GQL_USER_SEARCH_TOKEN as string),
   /**
@@ -42,10 +42,6 @@ export type ReqBodyGqlVariablesInput = z.infer<typeof ReqBodyGqlVariablesInput>;
 export const ReqBodyGqlVariables = z.object({ input: ReqBodyGqlVariablesInput });
 export type ReqBodyGqlVariables = z.infer<typeof ReqBodyGqlVariables>;
 
-/**
- * @note See original stringified query - note the prepended and postpended whitespace:
- * `"\\n  query GetListingRental($input: SearchRentalsInput!) {\\n    searchRentals(input: $input) {\\n      search {\\n        criteria\\n      }\\n      totalCount\\n      edges {\\n        ... on OrganicRentalEdge {\\n          node {\\n            id\\n            areaName\\n            bedroomCount\\n            buildingType\\n            fullBathroomCount\\n            geoPoint {\\n              latitude\\n              longitude\\n            }\\n            halfBathroomCount\\n            noFee\\n            leadMedia {\\n              photo {\\n                  key\\n              }\\n            }\\n            price\\n            relloExpress {\\n              ctaEnabled\\n              link\\n              rentalId\\n            }\\n            sourceGroupLabel\\n            status\\n            street\\n            unit\\n            urlPath\\n          }\\n        }\\n      }\\n    }\\n  }\\n"`
- */
 const gqlQuery = `
 query GetListingRental($input: SearchRentalsInput!) {
   searchRentals(input: $input) {
@@ -56,33 +52,39 @@ query GetListingRental($input: SearchRentalsInput!) {
     edges {
       ... on OrganicRentalEdge {
         node {
-          id
-          areaName
-          bedroomCount
+          address: geoPoint { latitude, longitude } 
+          agency: sourceGroupLabel
+          availableAt
+          bedCt: bedroomCount
           buildingType
-          fullBathroomCount
-          geoPoint {
-            latitude
-            longitude
-          }
-          halfBathroomCount
+          displayUnit
+          fullBathCt: fullBathroomCount
+          furnished
+          halfBathCt: halfBathroomCount
+          hasTour3d
+          hasVideos
+          id
+          interestingPriceDelta
+          isNewDevelopment
+          # leadMedia
+          leaseTermMonths
+          livingAreaSize
+          mediaAssetCount
+          monthsFree
+          netEffectivePrice
           noFee
-          leadMedia {
-            photo {
-              key
-            }
-          }
+          offMarketAt
+          # photos
           price
-          relloExpress {
-            ctaEnabled
-            link
-            rentalId
-          }
-          sourceGroupLabel
+          region: areaName
+          sourceType
+          state
           status
           street
           unit
+          # upcomingOpenHouse { ... } # unknown fields
           urlPath
+          zipCode
         }
       }
     }
@@ -93,6 +95,7 @@ export const ReqBodyGql = z.object({
   /** GQL syntax string
    * @todo add validation
    */
+  // query: z.string().min(1).catch(gqlQuery),
   query: z.string().min(1).catch(gqlQuery),
   variables: ReqBodyGqlVariables,
 });

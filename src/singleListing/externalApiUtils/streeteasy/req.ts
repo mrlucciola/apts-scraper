@@ -4,7 +4,7 @@ import { zNumeric } from "../../../utils/zod";
 import { newFilepath } from "../../resUtils";
 import { ZStreeteasyListingUrl } from "./interfaces";
 import type { IFetchSingleListing } from "../../interfaces";
-import type { ListingDoc } from "../../../db/models/listing";
+import type { ListingDeprecDoc } from "../../../db/models/listingDeprec";
 
 /** Single listing */
 export const reqHeadersStreeteasy: HeadersInit = {
@@ -38,12 +38,12 @@ export const reqParamsStreeteasy: RequestInit = {
  * - Had an unresolved issue with `axios` r.e. headers (JS-Fetch-API works for now)
  */
 export const fetchSingleListingStreeteasy: IFetchSingleListing = async (
-  listingInfo: string | number | ListingDoc
+  listingInfo: string | number | ListingDeprecDoc
 ) => {
   // Test if input is number or URL
   const listingId =
     zNumeric.safeParse(listingInfo).data ||
-    zNumeric.safeParse((listingInfo as ListingDoc).listing_id).data;
+    zNumeric.safeParse((listingInfo as ListingDeprecDoc).listing_id).data;
   const listingTestUrl = listingId ? `https://streeteasy.com/rental/${listingId}` : listingInfo;
 
   // Validate URL

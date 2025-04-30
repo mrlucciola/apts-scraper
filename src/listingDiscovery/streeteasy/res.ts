@@ -1,53 +1,96 @@
 import { z } from "zod";
-import { zNumeric } from "../../utils/zod";
+import { ListingFields } from "../../db/models/listing";
+import { zDayjs } from "../../utils/zod";
 
-export const EdgeNode = z.object({
-  id: zNumeric, // "4687718"
-  /** @note May be an enum */
-  areaName: z.string(), // "Hoboken"
-  /** @note Small integer */
-  bedroomCount: z.number().int(), // 0
-  /** @note Currently includes all observed values, there may be others however. */
-  buildingType: z.enum(["HOUSE", "CONDO", "UNKNOWN", "MULTIFAMILY", "RENTAL"]), // "HOUSE"
-  /** @note Small integer */
-  fullBathroomCount: z.number().int(), // 1
-  geoPoint: z.object({
-    latitude: z.number(), // 40.7383
-    longitude: z.number(), // -74.036
-  }),
-  /** @note Small integer */
-  halfBathroomCount: z.number().int(), // 0
-  noFee: z.boolean().nullish(), // false
-  // "6aee733e6dd2097652c329da981fc8a0"
-  leadMedia: z.object({ photo: z.object({ key: z.string().nullish() }).nullish() }).nullable(),
-  price: z.number(), // 2300
-  relloExpress: z.any(), // null
-  sourceGroupLabel: z.string().nullable(), // "Realty Express LaBarbera"
-  /** @todo Incomplete enum */
-  status: z.enum(["ACTIVE"]), // "ACTIVE"
-  street: z.string(), // "356 1st Street",
-  unit: z.string().nullable(), // "1R",
-  urlPath: z.string(), // "/building/356-1-street-hoboken/1r",
+export const edgeNodeToListingAdapter = (input: EdgeNode): ListingFields => ({
+  ...input,
+
+  address: {
+    ...input.address,
+
+    region: input.region,
+    street: input.street,
+    unit: input.unit,
+    state: input.state,
+    zipCode: input.zipCode,
+  },
+
+  broker: { agency: input.agency },
 });
+
+export const EdgeNode = ListingFields.pick({
+  id: true,
+  price: true,
+  buildingType: true,
+  noFee: true,
+  status: true,
+  urlPath: true,
+  bedCt: true,
+  fullBathCt: true,
+  halfBathCt: true,
+  availableAt: true,
+  displayUnit: true,
+  furnished: true,
+})
+  .required()
+  .extend({
+    // Renamed fields
+    agency: ListingFields.shape.broker.unwrap().shape.agency, // "Realty Express LaBarbera"
+
+    // Address fields
+    address: ListingFields.shape.address.partial(),
+    region: ListingFields.shape.address.shape.region, // "Hoboken"
+    street: ListingFields.shape.address.shape.street, // "356 1st Street",
+    unit: ListingFields.shape.address.shape.unit, // "1R",
+    state: ListingFields.shape.address.shape.state,
+    zipCode: ListingFields.shape.address.shape.zipCode,
+
+    // Unimportant
+    // leadMedia: z.any().optional(), LeadMedia # OBJECT
+    hasTour3d: z.boolean().nullish(),
+    hasVideos: z.boolean().nullish(),
+    interestingPriceDelta: z.number().int().nullish(),
+    livingAreaSize: z.number().int().nullish(),
+    mediaAssetCount: z.number().int(), // required !
+    netEffectivePrice: z.number().int(), // required !
+    isNewDevelopment: z.boolean().nullish(),
+    leaseTermMonths: z.number().nullish(),
+    monthsFree: z.number().nullish(),
+    sourceType: z.string().nullish(), // ListingSourceType # ENUM,
+    offMarketAt: zDayjs.nullish(),
+    photos: z.array(z.any()).nullish(), // [Photo] // # OBJECT
+    upcomingOpenHouse: z.any().nullish(), // OpenHouseDigest // # OBJECT
+  });
 export type EdgeNode = z.infer<typeof EdgeNode>;
 
 export const EdgeItem = z.object({ node: EdgeNode });
 export type EdgeItem = z.infer<typeof EdgeItem>;
 
 export const GqlResJson = z.object({
-  data: z.object({
-    searchRentals: z.object({
-      search: z.object({
-        /** x "|"-delimited key-value pairs, i.e. "area:1004000|price:1000-10000|status:open" */
-        criteria: z
-          .string()
-          .describe(
-            '"|"-delimited key-value pairs, i.e. "area:1004000|price:1000-10000|status:open"'
-          ),
+  data: z
+    .object({
+      searchRentals: z.object({
+        search: z.object({
+          /** x "|"-delimited key-value pairs, i.e. "area:1004000|price:1000-10000|status:open" */
+          criteria: z
+            .string()
+            .describe(
+              '"|"-delimited key-value pairs, i.e. "area:1004000|price:1000-10000|status:open"'
+            ),
+        }),
+        totalCount: z.number(),
+        edges: z.array(EdgeItem),
       }),
-      totalCount: z.number(),
-      edges: z.array(EdgeItem),
-    }),
-  }),
+    })
+    .optional(),
+  errors: z
+    .array(
+      z.object({
+        message: z.string(),
+        locations: z.array(z.any()),
+        extensions: z.array(z.any()),
+      })
+    )
+    .optional(),
 });
 export type GqlResJson = z.infer<typeof GqlResJson>;

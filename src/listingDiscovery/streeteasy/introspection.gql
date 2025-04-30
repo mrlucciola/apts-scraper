@@ -1,0 +1,65 @@
+# V6 API - https://api-v6.streeteasy.com/ (POST)
+
+# Aliased to geoPoint
+type Geo {
+  latitude: Float
+  longitude: Float
+
+  # ... @note there are more fields
+}
+
+enum BuildingType {
+  # ... 
+}
+enum RentalStatus {
+  # ... 
+}
+enum ListingSourceType {
+  # ... 
+}
+
+# not important
+type LeadMedia {
+}
+
+type OpenHouseDigest {
+}
+
+
+type SearchRentalsInput {
+  id: ID!
+  areaName: String!
+  bedroomCount: Int!
+  buildingType: BuildingType! # ENUM
+  fullBathroomCount: Int!
+  halfBathroomCount: Int!
+  mediaAssetCount: Int!
+  noFee: Boolean!
+  netEffectivePrice: Int!
+  price: Int!
+  state: String!
+  status: RentalStatus! # ENUM
+  street: String!
+  zipCode: String!
+
+  availableAt: Date
+  furnished: Boolean
+  geoPoint: Geo # OBJECT
+  hasTour3d: Boolean
+  hasVideos: Boolean
+  interestingPriceDelta: Int
+  isNewDevelopment: Boolean
+  leadMedia: LeadMedia # OBJECT
+  leaseTermMonths: Float
+  livingAreaSize: Int
+  monthsFree: Float
+  offMarketAt: Date
+  photos: [Photo] # OBJECT
+  sourceGroupLabel: String
+  sourceType: ListingSourceType # ENUM
+  upcomingOpenHouse: OpenHouseDigest # OBJECT
+  unit: String
+  displayUnit: String
+  relloExpress: RelloExpress # OBJECT
+  urlPath: String
+}

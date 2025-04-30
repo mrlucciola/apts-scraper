@@ -1,4 +1,4 @@
-import { ReqBodyGql, ReqBodyGqlVariablesInput } from "./gqlConfig";
+import { ReqBodyGql } from "./gqlConfig";
 
 /** @todo move to reqConfig.ts */
 export const apiEndpoint = "https://api-v6.streeteasy.com/";
@@ -36,4 +36,3 @@ export const reqConfigDefault: RequestInit = {
 };
 
 export const defaultQuery = ReqBodyGql.shape.query.parse(undefined);
-export const defaultQueryInputVariables = ReqBodyGqlVariablesInput.parse(undefined);

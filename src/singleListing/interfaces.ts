@@ -1,7 +1,7 @@
 import type { DocumentType } from "@typegoose/typegoose/lib/types";
-import type { Listing } from "../db/models/listing";
+import type { ListingDeprec } from "../db/models/listingDeprec";
 
-export type FetchParseUpdateListingFxn = (listing: DocumentType<Listing>) => Promise<void>;
+export type FetchParseUpdateListingFxn = (listing: DocumentType<ListingDeprec>) => Promise<void>;
 
 /**
  * @todo Support HTML response body/text

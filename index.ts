@@ -34,7 +34,7 @@ console.log("Hello via Bunx!");
 
 // const listingId = 3943463;
 // const processListings = async () => {
-getMultiListing();
+// getMultiListing();
 //   getSingleListing;
 // };
 

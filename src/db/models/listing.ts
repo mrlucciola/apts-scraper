@@ -1,40 +1,93 @@
 import { prop, modelOptions, Severity, getModelForClass } from "@typegoose/typegoose";
 import type { DocumentType } from "@typegoose/typegoose/lib/types";
+import { z } from "zod";
+// utils
+import { zDayjs } from "../../utils/zod";
+import { ExtApiService } from "../../general/enums";
 //
-import { type MultiListingResItem } from "../../listingDiscovery/response";
-import { ListingNote, ListingRowBase } from "../../listingDiscovery/dbUtils/dbSchemas";
-//
-import type { SingleListingResBody } from "../../local.singleListingDEPREC/response";
-import type { StreeteasyHtmlDetailSchema } from "../../singleListing/dbUtils/models";
+import { BuildingType } from "../../streeteasyUtils/listingEnums";
+import { AddressDb } from "./address";
+import { RentalHistory, RentalHistoryStatus } from "./rentalHistory";
+import { ListingIdField } from "../../general/commonValidation";
+import { Amenities } from "../../singleListing/externalApiUtils/streeteasy/interfaces";
 
-@modelOptions({ schemaOptions: { timestamps: true }, options: { allowMixed: Severity.ALLOW } })
+export const BrokerInfo = z.object({
+  phone: z.string().optional(),
+  email: z.string().optional(),
+  fullName: z.string().optional(),
+  agency: z.string().nullish(),
+});
+export type BrokerInfo = z.infer<typeof BrokerInfo>;
+
+/** LOCATION */
+
+/** STATUS */
+export const UnitInfo = z.object({
+  roomCt: z.number().optional(),
+  size: z.number().optional(),
+  outdoorSize: z.number().optional(),
+  description: z.string().optional(),
+  bedCt: z.number().int().optional(),
+  fullBathCt: z.number().int().optional(),
+  halfBathCt: z.number().int().optional(),
+  urlPath: z.string().optional(), // "/building/356-1-street-hoboken/1r"
+});
+export const BuildingInfo = z.object({
+  /** @note Currently includes all observed values, there may be others however. */
+  buildingType: BuildingType.optional(),
+  buildingId: z.string().optional(),
+});
+
+export const ListingStats = z.object({
+  savedByCt: z.number().nullish(),
+  amenities: z.array(Amenities).nullish(),
+  listingType: z.enum(["rental"]).nullish(),
+  daysOnMarket: z.number().nullish(),
+  availableAt: zDayjs.nullish(), // "2024-11-12",
+});
+
+export const ListingFields = UnitInfo.merge(BuildingInfo).merge(ListingStats).extend({
+  id: ListingIdField,
+  address: AddressDb,
+
+  price: z.number(),
+  noFee: z.boolean().optional(), // On `EdgeNode`
+  history: RentalHistory.optional(),
+  status: RentalHistoryStatus.optional(),
+
+  broker: BrokerInfo.optional(),
+
+  displayUnit: z.string().nullish(),
+  furnished: z.boolean().nullish(),
+
+  /** From `log` collection */
+  updateId: z.string().optional(),
+  /** From `log` collection. Should match date associated with `updateId`. */
+  dtUpdate: zDayjs.optional(),
+});
+export type ListingFields = z.infer<typeof ListingFields>;
+
+export const FieldLogItemBase = z.object({
+  dtCreated: zDayjs,
+  updateId: z.string(),
+});
+export type FieldLogItemBase = z.infer<typeof FieldLogItemBase>;
+
+@modelOptions({
+  schemaOptions: { collection: "listings", timestamps: true },
+  options: { allowMixed: Severity.ALLOW },
+})
 export class Listing {
-  @prop({ _id: true, required: true, unique: true })
-  listing_id: number;
-  @prop({ required: true })
-  listing_type: MultiListingResItem["listing_type"]; // "Rental"
-  @prop({ required: true })
-  longitude: MultiListingResItem["longitude"]; // -74.02420044
-  @prop({ required: true })
-  latitude: MultiListingResItem["latitude"]; // 40.7521019
-  @prop({ required: true })
-  listed_price: MultiListingResItem["listed_price"];
+  @prop({ required: false, type: () => Object })
+  current: ListingFields;
 
-  @prop({ required: false, default: null })
-  rental: SingleListingResBody["rental"];
-  @prop({ required: false, default: null })
-  listedByList: SingleListingResBody["listedByList"];
-  @prop({ required: false, default: null })
-  htmlDetail: StreeteasyHtmlDetailSchema;
-
-  @prop({ required: false })
-  notes: ListingNote[];
-  @prop({ required: false })
-  log: ListingRowBase[];
+  @prop({ required: false, type: () => Object })
+  sources: { [key in ExtApiService]: ListingFields };
 }
+
 const ListingModel = getModelForClass(Listing, {
   options: { allowMixed: Severity.ALLOW },
-  schemaOptions: { timestamps: true },
+  schemaOptions: { timestamps: true, collection: "listings" },
 });
 export default ListingModel;
 export type ListingModel = typeof ListingModel;
@@ -42,3 +95,9 @@ export type ListingModel = typeof ListingModel;
 export type ListingDoc = DocumentType<Listing>;
 
 export type ListingKey = keyof Listing;
+
+/**
+ * getRentalHistory = () => {
+ *   listing.history[0]
+ * }
+ */
