@@ -36,6 +36,8 @@ export const reqParamsStreeteasy: RequestInit = {
 /**
  * - Specific to getting session/anon-user headers for API requests
  * - Had an unresolved issue with `axios` r.e. headers (JS-Fetch-API works for now)
+ *
+ * @deprecated delete this function
  */
 export const fetchSingleListingStreeteasy: IFetchSingleListing = async (
   listingInfo: string | number | ListingDeprecDoc

@@ -1,0 +1,45 @@
+import type { ExtApiService } from "../../../general/enums";
+import type { ResType } from "../../../listingDiscovery/interfaces";
+
+export type FetchFxn<TRes extends ResType> = (..._: any) => TRes;
+
+export class ServiceConfigMl<
+  TSrv extends ExtApiService,
+  TFetchFxn extends FetchFxn<TRes>,
+  TRes extends ResType
+> {
+  readonly serviceName: TSrv;
+  readonly fetchListing: TFetchFxn;
+  readonly reqConfig: RequestInit;
+
+  // States
+  /** Response - defined after fetch is made */
+  protected res: TRes | undefined;
+
+  constructor(newConfig: Omit<ServiceConfigMl<TSrv, TFetchFxn, TRes>, "fetchAndInsert">) {
+    this.serviceName = newConfig.serviceName;
+    this.fetchListing = newConfig.fetchListing;
+    this.reqConfig = newConfig.reqConfig;
+  }
+
+  /** */
+  async fetchAndInsert(...reqParams: Parameters<TFetchFxn>) {
+    this.res = await this.fetchListing(...reqParams);
+
+    // const body = await this.extractBodyFromRes(response);
+
+    // // @note This may be used in the near future
+    // const logDoc = await this.logRequest(response, reqConfig, body);
+
+    // await (this.handleRequestError && this.handleRequestError(response));
+
+    // const listingsRes = this.extractListingsFromBody(body);
+
+    // const listingsDb = this.validateAndTransformToDbModel(listingsRes);
+
+    // // @todo figure this out
+    // // const filteredListings = this.filterListingsBy(listingsDb);
+
+    // return await this.insertToDb(listingsDb);
+  }
+}
