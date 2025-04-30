@@ -21,15 +21,22 @@ describe("streeteasy-singlelisting full flow", async () => {
   // @todo add: test("fail: validation", async () => {});
   // @todo add: test("fail: config", async () => {});
   let res: Response | undefined;
-  let resJson: GqlResJson | undefined;
+  let resText: string | undefined;
   let listing: EdgeItem | undefined;
   let listingDb: Listing | undefined;
 
-  test("successful fetch", async () => {
+  test("PASS: fetch listing", async () => {
     const testListingId: ListingIdField = "3233256"; // 145 4th Ave. #16A - East Village
     res = await streeteasySingleListingConfig.fetchListing(testListingId);
 
     expect(res.status, JSON.stringify(res)).toBeLessThan(300);
+  });
+  test("PASS: extract response body", async () => {
+    if (!res || res.status >= 300) throw new Error(`Response: ${JSON.stringify(res, null, 2)}`);
+
+    resText = await streeteasySingleListingConfig.extractBodyFromRes(res);
+
+    expect(resText, "ResText is not a string").toBeString();
   });
 
   /**

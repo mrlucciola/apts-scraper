@@ -10,23 +10,30 @@ export type FetchFxn<TRes extends ResType = Response> = (
   ..._: any
 ) => Promise<TRes>;
 
+export type ExtractBodyFromResFxn<TRes extends ResType, TBody> = (res: TRes) => Promise<TBody>;
+
 export class ServiceConfigSl<
-  TSrv extends ExtApiService,
+  TBody,
+  TRes extends ResType,
   TFetchFxn extends FetchFxn<TRes>,
-  TRes extends ResType
+  TSrv extends ExtApiService
 > {
   readonly serviceName: TSrv;
-  readonly fetchListing: TFetchFxn;
   readonly reqConfig: RequestInit;
+  // Functions
+  readonly fetchListing: TFetchFxn;
+  readonly extractBodyFromRes: ExtractBodyFromResFxn<TRes, TBody>;
 
   // States
   /** Response - defined after fetch is made */
   protected res: TRes | undefined;
 
-  constructor(newConfig: Omit<ServiceConfigSl<TSrv, TFetchFxn, TRes>, "fetchAndInsert">) {
+  constructor(newConfig: Omit<ServiceConfigSl<TBody, TRes, TFetchFxn, TSrv>, "fetchAndInsert">) {
     this.serviceName = newConfig.serviceName;
-    this.fetchListing = newConfig.fetchListing;
     this.reqConfig = newConfig.reqConfig;
+    // Functions
+    this.fetchListing = newConfig.fetchListing;
+    this.extractBodyFromRes = newConfig.extractBodyFromRes;
   }
 
   /** */
@@ -34,7 +41,7 @@ export class ServiceConfigSl<
     const [listingId, ...otherReqParams] = reqParams;
     const res = await this.fetchListing(listingId, ...otherReqParams);
 
-    // const body = await this.extractBodyFromRes(response);
+    const body = await this.extractBodyFromRes(res);
 
     // // @note This may be used in the near future
     // const logDoc = await this.logRequest(response, reqConfig, body);
