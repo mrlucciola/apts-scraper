@@ -1,9 +1,16 @@
+import type { DocumentType } from "@typegoose/typegoose/lib/types";
+//
 import type { ExtApiService } from "../../../general/enums";
 import type { ResType } from "../../../listingDiscovery/interfaces";
+import type { Listing } from "../../../db/models/listing";
+import type { ListingIdField } from "../../../general/commonValidation";
 
-export type FetchFxn<TRes extends ResType> = (..._: any) => TRes;
+export type FetchFxn<TRes extends ResType = Response> = (
+  listingId: ListingIdField, // ListingIdField | DocumentType<Listing>,
+  ..._: any
+) => Promise<TRes>;
 
-export class ServiceConfigMl<
+export class ServiceConfigSl<
   TSrv extends ExtApiService,
   TFetchFxn extends FetchFxn<TRes>,
   TRes extends ResType
@@ -16,7 +23,7 @@ export class ServiceConfigMl<
   /** Response - defined after fetch is made */
   protected res: TRes | undefined;
 
-  constructor(newConfig: Omit<ServiceConfigMl<TSrv, TFetchFxn, TRes>, "fetchAndInsert">) {
+  constructor(newConfig: Omit<ServiceConfigSl<TSrv, TFetchFxn, TRes>, "fetchAndInsert">) {
     this.serviceName = newConfig.serviceName;
     this.fetchListing = newConfig.fetchListing;
     this.reqConfig = newConfig.reqConfig;
@@ -24,7 +31,7 @@ export class ServiceConfigMl<
 
   /** */
   async fetchAndInsert(...reqParams: Parameters<TFetchFxn>) {
-    this.res = await this.fetchListing(...reqParams);
+    this.res = await this.fetchListing(reqParams[0], ...reqParams);
 
     // const body = await this.extractBodyFromRes(response);
 

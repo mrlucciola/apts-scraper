@@ -5,7 +5,7 @@ import timezone from "dayjs/plugin/timezone";
 import { connectToListingsDb } from "../db/connectToDb";
 import { findAllListings } from "../db/crud";
 // req
-import { updateSingleListingStreeteasy } from "./sources/streeteasy";
+import { updateSingleListingStreeteasy } from "./sources/streeteasy/deprec/deprecMisc";
 // interfaces
 import type { ListingDoc } from "../db/models/listing";
 

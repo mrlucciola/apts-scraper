@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { zUrl } from "../../../utils/zod";
+import { zUrl } from "../utils/zod";
 
 /** @todo Incomplete enum */
 export const Amenities = z.enum([
