@@ -1,18 +1,17 @@
 import type { ListingIdField } from "../../../general/commonValidation";
-import { ServiceConfigSl } from "./ServiceConfigSl";
+import { type FetchFxn, ServiceConfigSl } from "./ServiceConfigSl";
 import { buildListingUrl } from "./reqUtils";
+import { buildReqConfig } from "./reqConfig";
 
-const reqConfig: RequestInit = {};
+const defaultReqConfig = buildReqConfig();
 
-const fetchListing = async (listingId: ListingIdField) => {
+export const fetchListing: FetchFxn = async (listingId: ListingIdField) => {
   const url = buildListingUrl(listingId);
-  const res = await fetch(url, reqConfig);
-
-  return res;
+  return await fetch(url, defaultReqConfig);
 };
 
 export const streeteasySingleListingConfig = new ServiceConfigSl({
   fetchListing,
   serviceName: "streeteasy",
-  reqConfig,
+  reqConfig: defaultReqConfig,
 });

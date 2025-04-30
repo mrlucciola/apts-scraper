@@ -31,7 +31,8 @@ export class ServiceConfigSl<
 
   /** */
   async fetchAndInsert(...reqParams: Parameters<TFetchFxn>) {
-    this.res = await this.fetchListing(reqParams[0], ...reqParams);
+    const [listingId, ...otherReqParams] = reqParams;
+    const res = await this.fetchListing(listingId, ...otherReqParams);
 
     // const body = await this.extractBodyFromRes(response);
 

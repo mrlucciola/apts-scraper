@@ -12,6 +12,8 @@ import ListingDeprecModel from "../src/db/models/listingDeprec";
 import { BuildingType } from "../src/streeteasyUtils/listingEnums";
 import { zDayjs } from "../src/utils/zod";
 import { RentalHistoryEvent, type RentalHistory } from "../src/db/models/rentalHistory";
+import { streeteasySingleListingConfig } from "../src/singleListing/sources/streeteasy";
+import type { ListingIdField } from "../src/general/commonValidation";
 
 await connectToListingsDb();
 
@@ -20,16 +22,14 @@ describe("streeteasy-singlelisting full flow", async () => {
   // @todo add: test("fail: config", async () => {});
   let res: Response | undefined;
   let resJson: GqlResJson | undefined;
-  let listings: EdgeItem[] | undefined;
-  let listingsDb: Listing[] | undefined;
+  let listing: EdgeItem | undefined;
+  let listingDb: Listing | undefined;
 
   test("successful fetch", async () => {
-    const { reqConfig, response } = await streeteasyMultiListingConfig.fetch();
-    expect(
-      response.status < 300,
-      JSON.stringify({ status: response.status, message: response.statusText })
-    );
-    res = response;
+    const testListingId: ListingIdField = "3233256"; // 145 4th Ave. #16A - East Village
+    res = await streeteasySingleListingConfig.fetchListing(testListingId);
+
+    expect(res.status, JSON.stringify(res)).toBeLessThan(300);
   });
 
   /**
