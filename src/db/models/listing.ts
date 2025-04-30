@@ -9,7 +9,7 @@ import { BuildingType } from "../../streeteasyUtils/listingEnums";
 import { AddressDb } from "./address";
 import { RentalHistory, RentalHistoryStatus } from "./rentalHistory";
 import { ListingIdField } from "../../general/commonValidation";
-import { Amenities } from "../../singleListing/externalApiUtils/streeteasy/interfaces";
+import { Amenities } from "../../streeteasyUtils/interfaces";
 
 export const BrokerInfo = z.object({
   phone: z.string().optional(),

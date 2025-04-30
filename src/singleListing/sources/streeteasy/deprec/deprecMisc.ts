@@ -1,14 +1,14 @@
-import type { ListingDeprec } from "../../../db/models/listingDeprec";
-import { StreeteasyHtmlDetailSchema } from "../../dbUtils/models";
-import { UpdateDocFromSingleListing, type ITransformSingleListing } from "../../interfaces";
+import type { ListingDeprec } from "../../../../db/models/listingDeprec";
+import { StreeteasyHtmlDetailSchema } from "../../../dbUtils/models";
+import { UpdateDocFromSingleListing, type ITransformSingleListing } from "../../../interfaces";
 import {
   parseActiveRentalStats,
   parseFullAddress,
   parseGqlItemPage,
-} from "../../parseHtml/activeRentalStats";
-import { parseSavedUserCt } from "../../parseHtml/parseElem";
-import { parsePriceHistory } from "../../parseHtml/priceHistory";
-import { htmlResToDoc } from "../../resUtils";
+} from "../../../parseHtml/activeRentalStats";
+import { parseSavedUserCt } from "../../../parseHtml/parseElem";
+import { parsePriceHistory } from "../../../parseHtml/priceHistory";
+import { htmlResToDoc } from "../../../resUtils";
 import { fetchSingleListingStreeteasy, handleUnsuccessfulResStreeteasy } from "./req";
 
 const transformHtmlToModel: ITransformSingleListing<Document, ListingDeprec> = (doc) => ({

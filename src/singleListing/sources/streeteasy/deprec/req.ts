@@ -1,10 +1,10 @@
 import fs from "fs";
 // local
-import { zNumeric } from "../../../utils/zod";
-import { newFilepath } from "../../resUtils";
-import { ZStreeteasyListingUrl } from "./interfaces";
-import type { IFetchSingleListing } from "../../interfaces";
-import type { ListingDeprecDoc } from "../../../db/models/listingDeprec";
+import { zNumeric } from "../../../../utils/zod";
+import { newFilepath } from "../../../resUtils";
+import { ZStreeteasyListingUrl } from "../../../../streeteasyUtils/interfaces";
+import type { IFetchSingleListing } from "../../../interfaces";
+import type { ListingDeprecDoc } from "../../../../db/models/listingDeprec";
 
 /** Single listing */
 export const reqHeadersStreeteasy: HeadersInit = {
@@ -36,6 +36,8 @@ export const reqParamsStreeteasy: RequestInit = {
 /**
  * - Specific to getting session/anon-user headers for API requests
  * - Had an unresolved issue with `axios` r.e. headers (JS-Fetch-API works for now)
+ *
+ * @deprecated delete this function
  */
 export const fetchSingleListingStreeteasy: IFetchSingleListing = async (
   listingInfo: string | number | ListingDeprecDoc
