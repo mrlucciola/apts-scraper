@@ -8,8 +8,11 @@ import type { SingleListingResBody } from "../../local.singleListingDEPREC/respo
 import type { StreeteasyHtmlDetailSchema } from "../../singleListing/dbUtils/models";
 
 /** @deprecated */
-@modelOptions({ schemaOptions: { timestamps: true }, options: { allowMixed: Severity.ALLOW } })
-export class Listing {
+@modelOptions({
+  schemaOptions: { collection: "listingsDeprec", timestamps: true },
+  options: { allowMixed: Severity.ALLOW },
+})
+export class ListingDeprec {
   /** @deprecated */
   @prop({ _id: true, required: true, unique: true })
   listing_id: number;
@@ -44,11 +47,11 @@ export class Listing {
   log: ListingRowBase[];
 }
 /** @deprecated */
-const ListingModel = getModelForClass(Listing, {
+const ListingDeprecModel = getModelForClass(ListingDeprec, {
   options: { allowMixed: Severity.ALLOW },
-  schemaOptions: { timestamps: true },
+  schemaOptions: { timestamps: true, collection: "listingsDeprec" },
 });
 /** @deprecated */
-export default ListingModel;
+export default ListingDeprecModel;
 /** @deprecated */
-export type ListingDoc = DocumentType<Listing>;
+export type ListingDeprecDoc = DocumentType<ListingDeprec>;

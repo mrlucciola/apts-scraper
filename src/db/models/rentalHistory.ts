@@ -2,7 +2,15 @@ import { z } from "zod";
 import { zDayjs } from "../../utils/zod";
 
 /** @note Possibly incomplete enum */
-export const RentalHistoryStatus = z.enum(["NO_LONGER_AVAILABLE", "ACTIVE"]);
+export const RentalHistoryStatus = z.enum([
+  "NO_LONGER_AVAILABLE",
+  "ACTIVE",
+  "LISTED",
+  "PRICE_DECREASE",
+  "PRICE_INCREASE",
+  "RENTED",
+  "DELISTED",
+]);
 export type RentalHistoryStatus = z.infer<typeof RentalHistoryStatus>;
 
 export const RentalHistoryEvent = z

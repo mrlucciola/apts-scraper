@@ -77,11 +77,6 @@ const extractListingsFromBody: ExtractListingsFromBodyFxn<TBody, TListingRes> = 
   return body.data.searchRentals.edges;
 };
 
-/**
- * @deprecated Needs to be updated to new DB model for `Listing`
- * @todo Update for new model
- * @todo Add validation
- */
 const validateAndTransformToDbModel: ValidateAndTransformToDbModel<TListingRes, TListingDb> = (
   listings
 ) =>
@@ -96,9 +91,9 @@ const insertToDb: InsertToDbFxn<TListingDb> = async (listings) => {
 
   // Find all documents that match any of these IDs
   const existingListings = await ListingModel.find(
-    { "current.id": { $in: listingIds } },
+    { "sources.streeteasy": { $in: listingIds } },
     // Only get the listing_id field
-    { "current.id": 1, _id: 0 }
+    { "sources.streeteasy": 1, _id: 0 }
   );
 
   // Create a set of existing IDs for faster lookup

@@ -7,9 +7,12 @@ export const edgeNodeToListingAdapter = (input: EdgeNode): ListingFields => ({
 
   address: {
     ...input.address,
+
     region: input.region,
-    unit: input.unit,
     street: input.street,
+    unit: input.unit,
+    state: input.state,
+    zipCode: input.zipCode,
   },
 
   broker: { agency: input.agency },

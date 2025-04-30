@@ -9,6 +9,7 @@ import { BuildingType } from "../../streeteasyUtils/listingEnums";
 import { AddressDb } from "./address";
 import { RentalHistory, RentalHistoryStatus } from "./rentalHistory";
 import { ListingIdField } from "../../general/commonValidation";
+import { Amenities } from "../../singleListing/externalApiUtils/streeteasy/interfaces";
 
 export const BrokerInfo = z.object({
   phone: z.string().optional(),
@@ -37,12 +38,15 @@ export const BuildingInfo = z.object({
   buildingId: z.string().optional(),
 });
 
-/**
- * getRentalHistory = () => {
- *   listing.history[0]
- * }
- */
-export const ListingFields = UnitInfo.merge(BuildingInfo).extend({
+export const ListingStats = z.object({
+  savedByCt: z.number().nullish(),
+  amenities: z.array(Amenities).nullish(),
+  listingType: z.enum(["rental"]).nullish(),
+  daysOnMarket: z.number().nullish(),
+  availableAt: zDayjs.nullish(), // "2024-11-12",
+});
+
+export const ListingFields = UnitInfo.merge(BuildingInfo).merge(ListingStats).extend({
   id: ListingIdField,
   address: AddressDb,
 
@@ -52,9 +56,6 @@ export const ListingFields = UnitInfo.merge(BuildingInfo).extend({
   status: RentalHistoryStatus.optional(),
 
   broker: BrokerInfo.optional(),
-
-  daysOnMarket: z.number().nullish(),
-  availableAt: zDayjs.nullish(), // "2024-11-12",
 
   displayUnit: z.string().nullish(),
   furnished: z.boolean().nullish(),
@@ -72,7 +73,10 @@ export const FieldLogItemBase = z.object({
 });
 export type FieldLogItemBase = z.infer<typeof FieldLogItemBase>;
 
-@modelOptions({ schemaOptions: { timestamps: true }, options: { allowMixed: Severity.ALLOW } })
+@modelOptions({
+  schemaOptions: { collection: "listings", timestamps: true },
+  options: { allowMixed: Severity.ALLOW },
+})
 export class Listing {
   @prop({ required: false, type: () => Object })
   current: ListingFields;
@@ -83,7 +87,7 @@ export class Listing {
 
 const ListingModel = getModelForClass(Listing, {
   options: { allowMixed: Severity.ALLOW },
-  schemaOptions: { timestamps: true },
+  schemaOptions: { timestamps: true, collection: "listings" },
 });
 export default ListingModel;
 export type ListingModel = typeof ListingModel;
@@ -91,3 +95,9 @@ export type ListingModel = typeof ListingModel;
 export type ListingDoc = DocumentType<Listing>;
 
 export type ListingKey = keyof Listing;
+
+/**
+ * getRentalHistory = () => {
+ *   listing.history[0]
+ * }
+ */

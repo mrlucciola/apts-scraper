@@ -7,6 +7,13 @@ import { EdgeItem, EdgeNode, GqlResJson } from "../src/listingDiscovery/streetea
 import ListingModel, { Listing, ListingFields } from "../src/db/models/listing";
 import { ExtApiService } from "../src/general/enums";
 import { newReqBodyMlStreeteasy } from "../src/listingDiscovery/streeteasy/gqlConfig";
+import { connectToListingsDb } from "../src/db/connectToDb";
+import ListingDeprecModel from "../src/db/models/listingDeprec";
+import { BuildingType } from "../src/streeteasyUtils/listingEnums";
+import { zDayjs } from "../src/utils/zod";
+import { RentalHistoryEvent, type RentalHistory } from "../src/db/models/rentalHistory";
+
+await connectToListingsDb();
 // import { createListing } from "../src/db/crud";
 
 // test("expired api key - single listing", async () => {
@@ -86,7 +93,7 @@ describe("multilisting - streeteasy v6 full flow", async () => {
       EdgeItem.parse(l);
     });
   });
-  test("successful validation and transformation to db model", async () => {
+  test("successful validation and transformation to db model", () => {
     if (!listings) throw new Error(`'listings' is undefined`);
 
     listingsDb = streeteasyMultiListingConfig.validateAndTransformToDbModel(listings);
@@ -102,4 +109,69 @@ describe("multilisting - streeteasy v6 full flow", async () => {
       });
     });
   });
+  test("successful search and insert", async () => {
+    if (listingsDb === undefined) throw new Error(`'listingsDb' is undefined`);
+    if (listingsDb.length === 0) throw new Error(`'listingsDb' is empty`);
+
+    streeteasyMultiListingConfig.insertToDb(listingsDb);
+  });
+});
+
+test("migrate listingDeprec to listing", async () => {
+  const existingDeprecListings = await ListingDeprecModel.find();
+  const deprecListingIds = existingDeprecListings.map((l) => {
+    try {
+      const newPriceHistory: RentalHistory | undefined = l.htmlDetail?.priceHistory
+        ? l.htmlDetail.priceHistory.map((ph) =>
+            RentalHistoryEvent.parse({
+              date: ph ? ph.date : undefined,
+              price: ph ? ph.price : undefined,
+              status: ph ? ph.event : undefined,
+            })
+          )
+        : undefined;
+      const newListingFields: ListingFields = {
+        id: l.listing_id.toString(),
+        address: {
+          longitude: l.longitude,
+          latitude: l.latitude,
+          unit: l.rental?.address?.unit,
+          street: l.htmlDetail?.fullAddress?.streetAddress,
+          state: l.htmlDetail?.fullAddress?.addressRegion, // state
+          region: l.htmlDetail?.activeRentalStats?.propAreaShort, // east-village
+          zipCode: l.htmlDetail?.fullAddress?.postalCode,
+          city: l.htmlDetail?.fullAddress?.addressLocality,
+        },
+        history: newPriceHistory ?? undefined,
+        price: l.listed_price,
+        buildingId: l.htmlDetail?.activeRentalStats.buildID?.toString() ?? undefined,
+        buildingType: BuildingType.safeParse(
+          l.htmlDetail?.activeRentalStats?.buildType?.toUpperCase()
+        ).data,
+
+        daysOnMarket: l.htmlDetail?.activeRentalStats.listDaysMarket,
+        availableAt: zDayjs.parse(l.htmlDetail?.activeRentalStats.listAvailDate),
+
+        roomCt: l.htmlDetail?.activeRentalStats.listRoom,
+        size: l.htmlDetail?.activeRentalStats.listSqFt,
+        description: l.htmlDetail?.description,
+        bedCt: l.htmlDetail?.activeRentalStats.listBed,
+        fullBathCt: l.htmlDetail?.activeRentalStats.propFullBaths,
+        halfBathCt: l.htmlDetail?.activeRentalStats.propHalfBaths,
+      };
+
+      const newListing: Listing = {
+        current: newListingFields,
+        sources: { streeteasy: newListingFields },
+      };
+      return newListing;
+    } catch (err) {
+      console.warn("l", l);
+      console.warn("l.htmlDetail.priceHistory", l.htmlDetail?.priceHistory);
+
+      console.warn("l.rental", l.rental);
+      throw err;
+    }
+  });
+  const uniqueDeprecListingIds = [...new Set(deprecListingIds)];
 });

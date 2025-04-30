@@ -3,9 +3,8 @@ import config from "./config";
 import log from "../logger/loggerUtils";
 
 export const connectToListingsDb = async () => {
-  const dbUri = config.dbUri;
   try {
-    const conn = await mongoose.connect(dbUri);
+    const conn = await mongoose.connect(config.dbUri);
     log.info("Connected to 'Listings' DB");
     return conn;
   } catch (error) {
@@ -16,9 +15,8 @@ export const connectToListingsDb = async () => {
 };
 
 export const connectToRequestLogMultiListingDb = async () => {
-  const dbUri = config.requestLogMultiUri;
   try {
-    const conn = await mongoose.connect(dbUri);
+    const conn = await mongoose.connect(config.requestLogMultiUri);
     log.info("Connected to 'Request Log: Multi-Listing' DB");
     return conn;
   } catch (error) {
