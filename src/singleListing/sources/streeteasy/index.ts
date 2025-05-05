@@ -17,7 +17,7 @@ import {
   parseFullAddress,
   parseGqlItemPage,
 } from "../../parseHtml/activeRentalStats";
-import { extractScriptString } from "./htmlParsing/extractDomElement";
+import { extractTargetJsonPayload } from "./htmlParsing/extractDomElement";
 
 const defaultReqConfig = buildReqConfig();
 
@@ -36,7 +36,7 @@ export const extractBodyFromRes: ExtractBodyFromResFxn<TRes, TBody> = async (res
 export const extractListingFromBody: ExtractListingFromBodyFxn<TBody, TListingRes> = (htmlStr) => {
   const parsedHtmlDom: JSDOM = new JSDOM(htmlStr);
   const doc = parsedHtmlDom.window.document;
-  const scriptTagWithPayload = extractScriptString(doc);
+  const scriptTagWithPayload = extractTargetJsonPayload(doc);
 
   // console.log("parsePriceHistory(doc)", parsePriceHistory(doc));
   // console.log("parseSavedUserCt(doc)", parseSavedUserCt(doc));

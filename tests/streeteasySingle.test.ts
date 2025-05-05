@@ -8,27 +8,26 @@ import { connectToListingsDb } from "../src/db/connectToDb";
 import { streeteasySingleListingConfig } from "../src/singleListing/sources/streeteasy";
 import type { ListingIdField } from "../src/general/commonValidation";
 import { StreeteasyHtmlDetailSchema } from "../src/singleListing/dbUtils/models";
-import { FinalPreprocessSchema } from "../src/singleListing/sources/streeteasy/htmlParsing/htmlToJsonValidation";
 import { htmlPayload } from "../src/singleListing/sources/streeteasy/htmlParsing/local.raw.json";
 
-import { extractScriptString } from "../src/singleListing/sources/streeteasy/htmlParsing/extractDomElement";
+import { extractTargetJsonPayload } from "../src/singleListing/sources/streeteasy/htmlParsing/extractDomElement";
 // @ts-ignore
 import * as rawHtmlImport from "../src/singleListing/sources/streeteasy/htmlParsing/local.nyc.res.txt";
-import { InitTwoElemArraySchema } from "../src/singleListing/sources/streeteasy/htmlParsing/domElemToPayload";
+import { ScriptInnerTextSchema2_Tuple } from "../src/singleListing/sources/streeteasy/htmlParsing/domElemToPayload";
+import type { HtmlPayloadSchema } from "../src/singleListing/sources/streeteasy/htmlParsing/htmlToJsonValidation";
 
 await connectToListingsDb();
 
 describe("se-sl html parse", () => {
   let parsedHtmlDom: JSDOM | undefined;
   let doc: Document | null | undefined;
-  let scriptString: string | null;
+  let validatedJsonPayload: HtmlPayloadSchema | undefined;
 
   test("process html into jsdom", () => {
     const rawHtml: string = rawHtmlImport.default;
 
     expect(rawHtml, "Raw HTML must be string").toBeTypeOf("string");
     expect(rawHtml, "Must be html").toContain("<!DOCTYPE html>");
-    console.log("contains scripts", rawHtml.includes("<script>"));
     parsedHtmlDom = new JSDOM(rawHtml);
 
     expect(parsedHtmlDom, "Parsed html dom returned undefined").not.toBeUndefined();
@@ -39,24 +38,18 @@ describe("se-sl html parse", () => {
     expect(doc, "Document within html returned undefined").not.toBeUndefined();
     expect(doc, "Document within html returned null").not.toBeNull();
   });
-  test("extract dom element", () => {
+  test("extract JSON from dom", () => {
     if (!doc) throw new Error(`Doc does not exist: ${doc}`);
 
-    scriptString = extractScriptString(doc);
-    expect(scriptString, "Target DOM elem is undefined").toBeDefined();
-    expect(scriptString, "Target DOM elem is null").not.toBeNull();
+    validatedJsonPayload = extractTargetJsonPayload(doc);
+    expect(validatedJsonPayload, "Target DOM elem is undefined").toBeDefined();
+    expect(validatedJsonPayload, "Target DOM elem is null").not.toBeNull();
   });
-  test("parse and validate payload from inner text", () => {
-    if (!scriptString) throw new Error(`'scriptString' does not exist: ${scriptString}`);
 
-    const arr = InitTwoElemArraySchema.parse(scriptString);
-
-    // expect(scriptString, "Target DOM elem is not defined").toBeDefined();
-  });
   // test("se-sl parsed-json-within-script to payload 3", () => {
   //   const orig = { a: ["$", "$L18", null, htmlPayload] };
 
-  //   const parsed = FinalPreprocessSchema.safeParse(orig);
+  //   const parsed = ScriptInnerTextSchema3_OuterJson.safeParse(orig);
   //   console.log(parsed.data ?? parsed.error);
   // });
 });
