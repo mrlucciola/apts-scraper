@@ -1,28 +1,72 @@
 import { describe, expect, test } from "bun:test";
+import { JSDOM } from "jsdom";
 // local
-import { streeteasyMultiListingConfig } from "../src/listingDiscovery/streeteasy/parse";
 // test data
 // import { resJsonV6 } from "../src/listingDiscovery/streeteasy/local.testRes";
-import { EdgeItem, EdgeNode, GqlResJson } from "../src/listingDiscovery/streeteasy/res";
-import ListingModel, { Listing, ListingFields } from "../src/db/models/listing";
-import { ExtApiService } from "../src/general/enums";
-import { newReqBodyMlStreeteasy } from "../src/listingDiscovery/streeteasy/gqlConfig";
+import { Listing } from "../src/db/models/listing";
 import { connectToListingsDb } from "../src/db/connectToDb";
-import ListingDeprecModel from "../src/db/models/listingDeprec";
-import { BuildingType } from "../src/streeteasyUtils/listingEnums";
-import { zDayjs } from "../src/utils/zod";
-import { RentalHistoryEvent, type RentalHistory } from "../src/db/models/rentalHistory";
 import { streeteasySingleListingConfig } from "../src/singleListing/sources/streeteasy";
 import type { ListingIdField } from "../src/general/commonValidation";
+import { StreeteasyHtmlDetailSchema } from "../src/singleListing/dbUtils/models";
+import { FinalPreprocessSchema } from "../src/singleListing/sources/streeteasy/htmlParsing/htmlToJsonValidation";
+import { htmlPayload } from "../src/singleListing/sources/streeteasy/htmlParsing/local.raw.json";
+
+import { extractScriptString } from "../src/singleListing/sources/streeteasy/htmlParsing/extractDomElement";
+// @ts-ignore
+import * as rawHtmlImport from "../src/singleListing/sources/streeteasy/htmlParsing/local.nyc.res.txt";
+import { InitTwoElemArraySchema } from "../src/singleListing/sources/streeteasy/htmlParsing/domElemToPayload";
 
 await connectToListingsDb();
+
+describe("se-sl html parse", () => {
+  let parsedHtmlDom: JSDOM | undefined;
+  let doc: Document | null | undefined;
+  let scriptString: string | null;
+
+  test("process html into jsdom", () => {
+    const rawHtml: string = rawHtmlImport.default;
+
+    expect(rawHtml, "Raw HTML must be string").toBeTypeOf("string");
+    expect(rawHtml, "Must be html").toContain("<!DOCTYPE html>");
+    console.log("contains scripts", rawHtml.includes("<script>"));
+    parsedHtmlDom = new JSDOM(rawHtml);
+
+    expect(parsedHtmlDom, "Parsed html dom returned undefined").not.toBeUndefined();
+    expect(parsedHtmlDom, "Parsed html dom returned null").not.toBeNull();
+
+    doc = parsedHtmlDom.window.document;
+
+    expect(doc, "Document within html returned undefined").not.toBeUndefined();
+    expect(doc, "Document within html returned null").not.toBeNull();
+  });
+  test("extract dom element", () => {
+    if (!doc) throw new Error(`Doc does not exist: ${doc}`);
+
+    scriptString = extractScriptString(doc);
+    expect(scriptString, "Target DOM elem is undefined").toBeDefined();
+    expect(scriptString, "Target DOM elem is null").not.toBeNull();
+  });
+  test("parse and validate payload from inner text", () => {
+    if (!scriptString) throw new Error(`'scriptString' does not exist: ${scriptString}`);
+
+    const arr = InitTwoElemArraySchema.parse(scriptString);
+
+    // expect(scriptString, "Target DOM elem is not defined").toBeDefined();
+  });
+  // test("se-sl parsed-json-within-script to payload 3", () => {
+  //   const orig = { a: ["$", "$L18", null, htmlPayload] };
+
+  //   const parsed = FinalPreprocessSchema.safeParse(orig);
+  //   console.log(parsed.data ?? parsed.error);
+  // });
+});
 
 describe("streeteasy-singlelisting full flow", async () => {
   // @todo add: test("fail: validation", async () => {});
   // @todo add: test("fail: config", async () => {});
   let res: Response | undefined;
   let resText: string | undefined;
-  let listing: EdgeItem | undefined;
+  let listingDetail: StreeteasyHtmlDetailSchema | undefined;
   let listingDb: Listing | undefined;
 
   test("PASS: fetch listing", async () => {
@@ -37,6 +81,14 @@ describe("streeteasy-singlelisting full flow", async () => {
     resText = await streeteasySingleListingConfig.extractBodyFromRes(res);
 
     expect(resText, "ResText is not a string").toBeString();
+  });
+  test("PASS: parse listing info from response", () => {
+    if (!resText) throw new Error(`No response text`);
+
+    listingDetail = streeteasySingleListingConfig.extractListingFromBody(resText);
+    const validation = StreeteasyHtmlDetailSchema.safeParse(listingDetail);
+
+    expect(validation.success, validation.error?.stack).toBeTrue();
   });
 
   /**

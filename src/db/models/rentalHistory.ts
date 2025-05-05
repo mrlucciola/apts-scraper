@@ -10,6 +10,8 @@ export const RentalHistoryStatus = z.enum([
   "PRICE_INCREASE",
   "RENTED",
   "DELISTED",
+  "DRAFT",
+  "TEMPORARILY_OFF_MARKET",
 ]);
 export type RentalHistoryStatus = z.infer<typeof RentalHistoryStatus>;
 

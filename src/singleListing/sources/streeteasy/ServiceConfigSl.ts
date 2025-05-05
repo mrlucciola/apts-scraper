@@ -12,7 +12,10 @@ export type FetchFxn<TRes extends ResType = Response> = (
 
 export type ExtractBodyFromResFxn<TRes extends ResType, TBody> = (res: TRes) => Promise<TBody>;
 
+export type ExtractListingFromBodyFxn<TBody, TListingRes> = (body: TBody) => TListingRes;
+
 export class ServiceConfigSl<
+  TListingRes,
   TBody,
   TRes extends ResType,
   TFetchFxn extends FetchFxn<TRes>,
@@ -23,17 +26,17 @@ export class ServiceConfigSl<
   // Functions
   readonly fetchListing: TFetchFxn;
   readonly extractBodyFromRes: ExtractBodyFromResFxn<TRes, TBody>;
+  readonly extractListingFromBody: ExtractListingFromBodyFxn<TBody, TListingRes>;
 
-  // States
-  /** Response - defined after fetch is made */
-  protected res: TRes | undefined;
-
-  constructor(newConfig: Omit<ServiceConfigSl<TBody, TRes, TFetchFxn, TSrv>, "fetchAndInsert">) {
+  constructor(
+    newConfig: Omit<ServiceConfigSl<TListingRes, TBody, TRes, TFetchFxn, TSrv>, "fetchAndInsert">
+  ) {
     this.serviceName = newConfig.serviceName;
     this.reqConfig = newConfig.reqConfig;
     // Functions
     this.fetchListing = newConfig.fetchListing;
     this.extractBodyFromRes = newConfig.extractBodyFromRes;
+    this.extractListingFromBody = newConfig.extractListingFromBody;
   }
 
   /** */
@@ -48,7 +51,7 @@ export class ServiceConfigSl<
 
     // await (this.handleRequestError && this.handleRequestError(response));
 
-    // const listingsRes = this.extractListingsFromBody(body);
+    const listingRes = this.extractListingFromBody(body);
 
     // const listingsDb = this.validateAndTransformToDbModel(listingsRes);
 
