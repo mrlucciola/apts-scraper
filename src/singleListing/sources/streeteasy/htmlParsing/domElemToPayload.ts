@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { HtmlPayloadSchema } from "./htmlToJsonValidation";
+import { HtmlPayloadSchema_SeSl } from "./htmlToJsonValidation";
 
 /** Validate text from within script tag
  * - After validation, transform to array-parameter contained within the `.push()` call (i.e. `[1, "a:[\"$ ... ]`)
@@ -63,4 +63,4 @@ type ScriptInnerTextSchema2_Tuple = z.infer<typeof ScriptInnerTextSchema2_Tuple>
  */
 export const ScriptInnerTextSchema3_Json = z.preprocess((input, ctx) => {
   return (input as ScriptInnerTextSchema2_Tuple)[3];
-}, HtmlPayloadSchema);
+}, HtmlPayloadSchema_SeSl);

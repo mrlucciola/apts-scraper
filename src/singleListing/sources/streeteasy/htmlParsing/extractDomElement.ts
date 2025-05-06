@@ -1,12 +1,16 @@
+import { JSDOM } from "jsdom";
 import {
   ScriptInnerTextSchema,
   ScriptInnerTextSchema2_Tuple,
   ScriptInnerTextSchema3_Json,
 } from "./domElemToPayload";
-import type { HtmlPayloadSchema } from "./htmlToJsonValidation";
+import type { HtmlPayloadSchema_SeSl } from "./htmlToJsonValidation";
 
 /** @todo Parse using JSDOM tools (i.e. `querySelector`) if possible */
-export const extractTargetJsonPayload = (doc: Document): HtmlPayloadSchema => {
+export const extractTargetJsonPayload = (htmlStr: string): HtmlPayloadSchema_SeSl => {
+  const parsedHtmlDom: JSDOM = new JSDOM(htmlStr);
+  const doc = parsedHtmlDom.window.document;
+
   const docBody = doc?.querySelector("body");
   const docInnerHtml = docBody?.innerHTML;
 
