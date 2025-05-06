@@ -1,12 +1,10 @@
 import { z } from "zod";
 import { ListingIdField } from "../../../../../general/commonValidation";
 import { zDayjs } from "../../../../../utils/zod";
-import { AddressDb } from "../../../../../db/models/address";
 import {
   RentalHistoryEventBase,
   RentalHistoryStatus,
 } from "../../../../../db/models/rentalHistory";
-import { Amenities } from "../../../../../streeteasyUtils/interfaces";
 import { AgencyFields, PropertyDetails } from "../general";
 
 const PriceStats = z.object({

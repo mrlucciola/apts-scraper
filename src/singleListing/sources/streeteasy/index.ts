@@ -3,7 +3,7 @@ import type { ListingIdField } from "../../../general/commonValidation";
 import { type FetchFxn, ServiceConfigSl, type ExtractBodyFromResFxn } from "./ServiceConfigSl";
 import { buildListingUrl } from "./reqUtils";
 import { buildReqConfig } from "./reqConfig";
-import { extractTargetJsonPayload } from "./htmlParsing/extractDomElement";
+import { extractTargetJsonPayloadJsdom } from "./htmlParsing/extractDomElement";
 import type { HtmlPayloadSchema_SeSl } from "./htmlParsing/htmlToJsonValidation";
 
 const defaultReqConfig = buildReqConfig();
@@ -29,5 +29,5 @@ export const streeteasySingleListingConfig = new ServiceConfigSl({
   // Functions
   fetchListing,
   extractBodyFromRes,
-  extractListingFromBody: extractTargetJsonPayload,
+  extractListingFromBody: extractTargetJsonPayloadJsdom,
 });

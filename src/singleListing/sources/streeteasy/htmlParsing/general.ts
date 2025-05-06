@@ -1,13 +1,12 @@
 import { z } from "zod";
 import { ListingIdField } from "../../../../general/commonValidation";
-import { AddressDb, AddressFull } from "../../../../db/models/address";
+import { AddressDb } from "../../../../db/models/address";
 import { RentalHistoryStatus } from "../../../../db/models/rentalHistory";
 import { Amenities } from "../../../../streeteasyUtils/interfaces";
 
 export const PropertyDetails = z.object({
-  address: AddressFull, // @note may be `AddressDb.omit({ latitude: true, longitude: true, region: true })`
+  address: AddressDb.omit({ latitude: true, longitude: true, region: true }), // @note may be `AddressDb.omit({ latitude: true, longitude: true, region: true })`
 
-  //
   roomCount: z.number(), // 4,
   bedroomCount: z.number(), // 2,
   fullBathroomCount: z.number(), // 2,
@@ -30,7 +29,8 @@ export const PropertyDetails = z.object({
       privateOutdoorSpaceTypes: z.array(z.any()),
       views: z.array(z.string()), // ["CITY", "SKYLINE"],
     })
-    .passthrough(),
+    .passthrough()
+    .nullable(),
 });
 export type PropertyDetails = z.infer<typeof PropertyDetails>;
 
