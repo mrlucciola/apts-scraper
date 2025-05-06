@@ -11,7 +11,7 @@ export const PropertyDetails = z.object({
   bedroomCount: z.number(), // 2,
   fullBathroomCount: z.number(), // 2,
   halfBathroomCount: z.number(), // 0,
-  livingAreaSize: z.number(), // 990,
+  livingAreaSize: z.number().nullish(), // 990,
   lotAreaSize: z.number(), // 0,
   amenities: z
     .object({
@@ -37,11 +37,13 @@ export type PropertyDetails = z.infer<typeof PropertyDetails>;
 // export const AgentFields = z.object({});
 export const AgencyFields = z.object({
   sourceGroupLabel: z.string(), // "Manhattan Realty Group",
-  license: z.object({
-    address: AddressDb,
-    businessName: z.string(), // "Manhattan Realty Group",
-    licenseType: z.string(), // @note enum "Corporate Broker",
-  }),
+  license: z
+    .object({
+      address: AddressDb,
+      businessName: z.string(), // "Manhattan Realty Group",
+      licenseType: z.string(), // @note enum "Corporate Broker",
+    })
+    .nullish(),
 });
 
 /**
@@ -55,7 +57,7 @@ export const ListedByListItem = z.object({
   profileId: z.number(), // 955466,
   name: z.string(), // "Luis Hernandez",
   phone: z.string(), // "+16467156554",
-  licenseType: z.string(), // "Real Estate Salesperson",
+  licenseType: z.string().nullish(), // "Real Estate Salesperson",
   sourceGroupLabel: z.string(), // "Manhattan Realty Group",
   isPro: z.boolean().nullish(),
   profileImage: z.object({ key: z.string() }).passthrough().nullish(), // "c9b923ae3f35bff2e5ddbcd6a2c4fc2c",

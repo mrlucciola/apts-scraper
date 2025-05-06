@@ -1,5 +1,4 @@
 import { describe, expect, test } from "bun:test";
-import { JSDOM } from "jsdom";
 // db
 import { connectToListingsDb } from "../src/db/connectToDb";
 // utils
@@ -13,30 +12,33 @@ import type { HtmlPayloadSchema_SeSl } from "../src/singleListing/sources/street
 const htmlFilesDir = "/src/singleListing/sources/streeteasy/htmlParsing/local";
 
 /**
- * - "../src/singleListing/sources/streeteasy/htmlParsing/local/nyc2.html"
- * - "../src/singleListing/sources/streeteasy/htmlParsing/local/nycRes.txt"
- * - "../src/singleListing/sources/streeteasy/htmlParsing/local/hbkRes.html"
- * - [ nyc2.html, nycRes.txt, hbkRes.html ]
- *
- * }]]}]]
- * }]]}]]}]
+ * - Dir: "../src/singleListing/sources/streeteasy/htmlParsing/local"
+ * - Files: [ nyc2.html, nycRes.txt, hbkRes.html ]
  */
 const htmlFiles = getHtmlFilesFromDir(htmlFilesDir);
+const randomHtmlIdx = Math.floor(Math.random() * htmlFiles.length);
+const randomRawHtml = htmlFiles[randomHtmlIdx];
 
 await connectToListingsDb();
 
 describe("se-sl html parse and validate", () => {
   let validatedJsonPayload: HtmlPayloadSchema_SeSl | undefined;
-  const rawHtml = htmlFiles[0];
 
   test("extract JSON from dom via JSDOM parsing", () => {
-    if (!rawHtml) throw new Error(`Doc does not exist: ${rawHtml}`);
-    expect(rawHtml, "Raw HTML must be string").toBeTypeOf("string");
-    expect(rawHtml, "Must be html").toContain("<!DOCTYPE html>");
+    htmlFiles.forEach((rawHtml) => {
+      if (!rawHtml) throw new Error(`Doc does not exist: ${rawHtml}`);
+      expect(rawHtml, "Raw HTML must be string").toBeTypeOf("string");
+      expect(rawHtml, "Must be html").toContain("<!DOCTYPE html>");
 
-    validatedJsonPayload = extractTargetJsonPayloadJsdom(rawHtml);
-    expect(validatedJsonPayload, "Target DOM elem is undefined").toBeDefined();
-    expect(validatedJsonPayload, "Target DOM elem is null").not.toBeNull();
+      validatedJsonPayload = extractTargetJsonPayloadJsdom(rawHtml);
+      expect(validatedJsonPayload, "Target DOM elem is undefined").toBeDefined();
+      expect(validatedJsonPayload, "Target DOM elem is null").not.toBeNull();
+    });
+  });
+  test("transform", () => {
+    if (!validatedJsonPayload) throw new Error(`JSON does not exist: ${validatedJsonPayload}`);
+
+    
   });
 });
 
@@ -60,7 +62,7 @@ test("se-sl async request-parse-validate flow", async () => {
   const resText = await streeteasySingleListingConfig.extractBodyFromRes(res);
   expect(resText, "Var `resText` must be type `string`").toBeString();
   expect(resText, "Var `resText` must be valid HTML").toContain("<!DOCTYPE html>");
-  
+
   const listingDetailRes = streeteasySingleListingConfig.extractListingFromBody(resText);
   console.log("res text:", listingDetailRes);
   expect(listingDetailRes, "JSON payload must be validated").toBeDefined();
