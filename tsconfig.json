@@ -26,6 +26,15 @@
     // mongo
     "experimentalDecorators": true,
     "strictPropertyInitialization": false,
-    "emitDecoratorMetadata": true
-  }
+    "emitDecoratorMetadata": true,
+    "types": [
+      "bun-types"
+    ]
+  },
+  "include": [
+    "src/**/*",
+  ],
+  "exclude": [
+    "**/node_modules"
+  ]
 }

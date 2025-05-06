@@ -1,39 +1,34 @@
+import { JSDOM } from "jsdom";
 import {
   ScriptInnerTextSchema,
-  ScriptInnerTextSchema2_Tuple,
+  ScriptInnerTextSchema1_InitTuple,
+  ScriptInnerTextSchema2_ParentTuple,
   ScriptInnerTextSchema3_Json,
 } from "./domElemToPayload";
-import type { HtmlPayloadSchema } from "./htmlToJsonValidation";
+import type { HtmlPayloadSchema_SeSl } from "./htmlToJsonValidation";
 
-/** @todo Parse using JSDOM tools (i.e. `querySelector`) if possible */
-export const extractTargetJsonPayload = (doc: Document): HtmlPayloadSchema => {
-  const docBody = doc?.querySelector("body");
-  const docInnerHtml = docBody?.innerHTML;
+export const extractTargetJsonPayloadJsdom = (htmlStr: string): HtmlPayloadSchema_SeSl => {
+  // Remove the self-closing <iframe /> element
+  const cleanedHtml = htmlStr.replace(/<iframe[^>]*\/>/gi, "");
 
-  const scriptLines = docInnerHtml
-    // ?.split(/\n\s+|\s+\n/)
-    ?.split(/\<\/?(script|style)\>/)
-    .filter((line) => line.includes("self.__next_f.push(["))
-    .map((line) => line.replace("</script>", "").trim());
+  const parsedHtmlDom = new JSDOM(cleanedHtml);
+  const bodyScripts = parsedHtmlDom.window.document.body.querySelectorAll("script");
 
-  if (!scriptLines || scriptLines.length === 0) throw new Error("No scripts found in document");
+  for (let idx = 0; idx < bodyScripts.length; idx++) {
+    const scriptText = bodyScripts[idx].textContent;
 
-  for (let idx = 0; idx < scriptLines.length; idx++) {
-    const elemInnerHtml = scriptLines[idx];
-
-    // @todo @DELETE @deprecated
-    if (!elemInnerHtml.includes(`self.__next_f.push([1, "a:["$"`)) continue;
-    // console.log("elemInnerHtml", elemInnerHtml);
-    const scriptInnerTextParsed = ScriptInnerTextSchema.safeParse(elemInnerHtml);
+    const scriptInnerTextParsed = ScriptInnerTextSchema.safeParse(scriptText);
     if (!scriptInnerTextParsed.data) continue;
 
-    const scriptInnerText2_tuple = ScriptInnerTextSchema2_Tuple.safeParse(
-      scriptInnerTextParsed.data
-    );
+    const initTuple = ScriptInnerTextSchema1_InitTuple.safeParse(scriptInnerTextParsed.data);
+    if (!initTuple.data) continue;
 
-    if (!scriptInnerText2_tuple.data) continue;
+    if (!initTuple.data[1].startsWith("a:[")) continue;
 
-    return ScriptInnerTextSchema3_Json.parse(scriptInnerText2_tuple.data);
+    const payloadParentTuple = ScriptInnerTextSchema2_ParentTuple.safeParse(initTuple.data);
+    if (!payloadParentTuple.data) continue;
+
+    return ScriptInnerTextSchema3_Json.parse(payloadParentTuple.data);
   }
 
   throw new Error("No valid JSON found in any script innerText");

@@ -26,7 +26,9 @@ export const AddressDb = AddressFull.partial().extend({
   latitude: z.number().optional(),
   longitude: z.number().optional(),
   region: z.string().nullish(), // "Manhattan",
+  unit: z.string().nullish(), // @note changing to nullish for an edge case - `listing.legacy.license.address.unit`
 });
+
 export type AddressDb = z.infer<typeof AddressDb>;
 
 export const LatLon = AddressDb.pick({ longitude: true, latitude: true });

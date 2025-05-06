@@ -18,6 +18,7 @@ const AmenitiesEnum = z.enum([
   "live_in_super",
   "package_room",
   "view",
+  "parking",
 ]);
 export const Amenities = z.preprocess((arg, ctx) => {
   if (typeof arg === "string") return AmenitiesEnum.parse(arg.toLowerCase());
@@ -40,6 +41,7 @@ export const amenitiesMap: { [k in Amenities]: string } = {
   live_in_super: "Live-in super",
   package_room: "Package room",
   view: "View",
+  parking: "Parking",
 };
 
 /** Example: https://streeteasy.com/rental/3943463 */

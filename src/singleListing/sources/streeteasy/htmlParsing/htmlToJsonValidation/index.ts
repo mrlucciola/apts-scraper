@@ -39,7 +39,7 @@ const ExperimentsSchema = z.object({
 });
 
 /** Top-level JSON Schema */
-export const HtmlPayloadSchema = z.object({
+export const HtmlPayloadSchema_SeSl = z.object({
   building: BuildingSchema,
   headerData: HeaderDataSchema,
   listing: ListingSchema,
@@ -52,4 +52,4 @@ export const HtmlPayloadSchema = z.object({
   agentsInfo: z.any(), // null
   //
 });
-export type HtmlPayloadSchema = z.infer<typeof HtmlPayloadSchema>;
+export type HtmlPayloadSchema_SeSl = z.infer<typeof HtmlPayloadSchema_SeSl>;

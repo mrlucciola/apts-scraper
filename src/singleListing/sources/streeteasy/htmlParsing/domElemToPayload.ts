@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { HtmlPayloadSchema } from "./htmlToJsonValidation";
+import { HtmlPayloadSchema_SeSl } from "./htmlToJsonValidation";
 
 /** Validate text from within script tag
  * - After validation, transform to array-parameter contained within the `.push()` call (i.e. `[1, "a:[\"$ ... ]`)
@@ -37,22 +37,40 @@ export const ScriptInnerTextSchema = z
  * `"[1, "a:["$", "$L18", null, { TARGET }]"]"`
  *
  * ### After transform:
- * `["$", "$L18", null, { TARGET }]`
+ * `[1, "a:["$", "$L18", null, { TARGET }]"]`
  */
-export const ScriptInnerTextSchema2_Tuple = z.preprocess((_input, _ctx) => {
-  const input = _input as string;
-  const preparsed = input;
-  const openArrBracketIdx = input.indexOf('"', input.indexOf('"') + 1);
-  const closeArrBracketIdx = input.lastIndexOf('"');
-  const arrSlice = preparsed.slice(openArrBracketIdx - 1, closeArrBracketIdx);
+export const ScriptInnerTextSchema1_InitTuple = z.preprocess((input, _ctx) => {
+  try {
+    return JSON.parse(input as string);
+  } catch (error) {
+    return input;
+  }
+}, z.tuple([z.any(), z.string()]));
+type ScriptInnerTextSchema1_InitTuple = z.infer<typeof ScriptInnerTextSchema1_InitTuple>;
+
+/**
+ * ### Input:
+ * `[1, "a:["$", "$L18", null, { TARGET }]"]`
+ *
+ * ### After transform:
+ * `{ a: ["$", "$L18", null, { TARGET }] }`
+ */
+export const ScriptInnerTextSchema2_ParentTuple = z.preprocess((_input, _ctx) => {
+  const input = _input as ScriptInnerTextSchema1_InitTuple;
+  const preparsed = input[1].trim();
+
+  const openArrBracketIdx = preparsed.indexOf("[");
+  const closeArrBracketIdx = preparsed.lastIndexOf("]");
+
+  const arrStr = preparsed.slice(openArrBracketIdx, closeArrBracketIdx + 1);
 
   try {
-    return JSON.parse(arrSlice);
+    return JSON.parse(arrStr);
   } catch (error) {
     return input;
   }
 }, z.tuple([z.any(), z.any(), z.any(), z.object({}).passthrough()]));
-type ScriptInnerTextSchema2_Tuple = z.infer<typeof ScriptInnerTextSchema2_Tuple>;
+type ScriptInnerTextSchema2_ParentTuple = z.infer<typeof ScriptInnerTextSchema2_ParentTuple>;
 
 /**
  * ### Input:
@@ -62,5 +80,5 @@ type ScriptInnerTextSchema2_Tuple = z.infer<typeof ScriptInnerTextSchema2_Tuple>
  * `{ TARGET }`
  */
 export const ScriptInnerTextSchema3_Json = z.preprocess((input, ctx) => {
-  return (input as ScriptInnerTextSchema2_Tuple)[3];
-}, HtmlPayloadSchema);
+  return (input as ScriptInnerTextSchema2_ParentTuple)[3];
+}, HtmlPayloadSchema_SeSl);
