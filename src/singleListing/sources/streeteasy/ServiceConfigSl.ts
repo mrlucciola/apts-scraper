@@ -10,23 +10,33 @@ export type FetchFxn<TRes extends ResType = Response> = (
   ..._: any
 ) => Promise<TRes>;
 
+export type ExtractBodyFromResFxn<TRes extends ResType, TBody> = (res: TRes) => Promise<TBody>;
+
+export type ExtractListingFromBodyFxn<TBody, TListingRes> = (body: TBody) => TListingRes;
+
 export class ServiceConfigSl<
-  TSrv extends ExtApiService,
+  TListingRes,
+  TBody,
+  TRes extends ResType,
   TFetchFxn extends FetchFxn<TRes>,
-  TRes extends ResType
+  TSrv extends ExtApiService
 > {
   readonly serviceName: TSrv;
-  readonly fetchListing: TFetchFxn;
   readonly reqConfig: RequestInit;
+  // Functions
+  readonly fetchListing: TFetchFxn;
+  readonly extractBodyFromRes: ExtractBodyFromResFxn<TRes, TBody>;
+  readonly extractListingFromBody: ExtractListingFromBodyFxn<TBody, TListingRes>;
 
-  // States
-  /** Response - defined after fetch is made */
-  protected res: TRes | undefined;
-
-  constructor(newConfig: Omit<ServiceConfigSl<TSrv, TFetchFxn, TRes>, "fetchAndInsert">) {
+  constructor(
+    newConfig: Omit<ServiceConfigSl<TListingRes, TBody, TRes, TFetchFxn, TSrv>, "fetchAndInsert">
+  ) {
     this.serviceName = newConfig.serviceName;
-    this.fetchListing = newConfig.fetchListing;
     this.reqConfig = newConfig.reqConfig;
+    // Functions
+    this.fetchListing = newConfig.fetchListing;
+    this.extractBodyFromRes = newConfig.extractBodyFromRes;
+    this.extractListingFromBody = newConfig.extractListingFromBody;
   }
 
   /** */
@@ -34,14 +44,14 @@ export class ServiceConfigSl<
     const [listingId, ...otherReqParams] = reqParams;
     const res = await this.fetchListing(listingId, ...otherReqParams);
 
-    // const body = await this.extractBodyFromRes(response);
+    const body = await this.extractBodyFromRes(res);
 
     // // @note This may be used in the near future
     // const logDoc = await this.logRequest(response, reqConfig, body);
 
     // await (this.handleRequestError && this.handleRequestError(response));
 
-    // const listingsRes = this.extractListingsFromBody(body);
+    const listingRes = this.extractListingFromBody(body);
 
     // const listingsDb = this.validateAndTransformToDbModel(listingsRes);
 
