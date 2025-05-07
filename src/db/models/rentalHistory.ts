@@ -25,23 +25,3 @@ export const RentalHistoryEventBase = z.object({
   date: zDayjs, // "2020-07-14"
 });
 export type RentalHistoryEventBase = z.infer<typeof RentalHistoryEventBase>;
-
-export const RentalHistoryEvent = RentalHistoryEventBase.transform((statusObj, ctx) => {
-  if (!statusObj.pricePercentChange && !statusObj.status) {
-    const message = `At least one of: 'pricePercentChange'/'status' must be defined. ${JSON.stringify(
-      statusObj
-    )}`;
-    ctx.addIssue({ code: z.ZodIssueCode.custom, message });
-    return z.NEVER;
-  }
-
-  /** @note This forced type is allowed */
-  const status: RentalHistoryStatus =
-    statusObj.pricePercentChange !== undefined ? "ACTIVE" : statusObj.status!;
-  /** @note This forced type is allowed */
-  const pricePercentChange: number =
-    statusObj.status !== undefined ? 0 : statusObj.pricePercentChange!;
-
-  return { ...statusObj, status, pricePercentChange };
-});
-export type RentalHistoryEvent = z.infer<typeof RentalHistoryEvent>;

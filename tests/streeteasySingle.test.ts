@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 // db
 import { connectToListingsDb } from "../src/db/connectToDb";
+import { findListingByListingId, updateListing } from "../src/db/crud";
 // utils
 import { getHtmlFilesFromDir } from "./utils/files";
 // local
@@ -9,6 +10,7 @@ import type { ListingIdField } from "../src/general/commonValidation";
 import { extractTargetJsonPayloadJsdom } from "../src/singleListing/sources/streeteasy/htmlParsing/extractDomElement";
 import type { HtmlPayloadSchema_SeSl } from "../src/singleListing/sources/streeteasy/htmlParsing/htmlToJsonValidation";
 import { transformToDbModel } from "../src/singleListing/sources/streeteasy/transformToDbModel";
+import { origListingDb, updatedListingDb } from "./local.streeteasySingle.data";
 
 const htmlFilesDir = "/src/singleListing/sources/streeteasy/htmlParsing/local";
 
@@ -40,6 +42,34 @@ describe("se-sl html parse-validate-transform", () => {
     if (!validatedJsonPayload) throw new Error(`JSON does not exist: ${validatedJsonPayload}`);
     transformToDbModel(validatedJsonPayload);
   });
+});
+
+// @todo incomplete test
+test("update db", async () => {
+  // Query the original doc
+  const origListingDoc = await findListingByListingId(
+    origListingDb.sources.streeteasy.id,
+    "streeteasy"
+  );
+  // origListingDoc === origListingDb
+
+  const listingDocId = origListingDoc?.id;
+  expect(listingDocId).toBeDefined();
+
+  await updateListing(updatedListingDb, "streeteasy");
+  const updatedListingDoc = await findListingByListingId(
+    updatedListingDb.sources.streeteasy.id,
+    "streeteasy"
+  );
+  // updatedListingDoc === updatedListingDb
+  console.log("\n\norigListingDoc", origListingDoc);
+  console.log("\n\nupdatedListingDoc", updatedListingDoc);
+  const origListingDoc2 = await updateListing(origListingDb, "streeteasy");
+  // origListingDoc2 === origListingDoc === origListingDb
+
+  // expect(doc.acknowledged).toBeTrue();
+  // expect(doc.matchedCount).toEqual(1);
+  // expect(doc.modifiedCount).toEqual(1);
 });
 
 /** ## Tests to add:

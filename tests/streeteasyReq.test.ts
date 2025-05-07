@@ -11,7 +11,7 @@ import { connectToListingsDb } from "../src/db/connectToDb";
 import ListingDeprecModel from "../src/db/models/listingDeprec";
 import { BuildingType } from "../src/streeteasyUtils/listingEnums";
 import { zDayjs } from "../src/utils/zod";
-import { RentalHistoryEvent } from "../src/db/models/rentalHistory";
+import { RentalHistoryEventBase } from "../src/db/models/rentalHistory";
 
 await connectToListingsDb();
 // import { createListing } from "../src/db/crud";
@@ -121,9 +121,9 @@ test("migrate listingDeprec to listing", async () => {
   const existingDeprecListings = await ListingDeprecModel.find();
   const deprecListingIds = existingDeprecListings.map((l) => {
     try {
-      const newPriceHistory: RentalHistoryEvent[] | undefined = l.htmlDetail?.priceHistory
+      const newPriceHistory: RentalHistoryEventBase[] | undefined = l.htmlDetail?.priceHistory
         ? l.htmlDetail.priceHistory.map((ph) =>
-            RentalHistoryEvent.parse({
+            RentalHistoryEventBase.parse({
               date: ph ? ph.date : undefined,
               price: ph ? ph.price : undefined,
               status: ph ? ph.event : undefined,

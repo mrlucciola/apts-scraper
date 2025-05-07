@@ -11,10 +11,10 @@ type TListingDb = Listing;
 /**
  *
  * RentalHistoryEventBase[] = ListingSchema["propertyHistory"][number]["rentalEventsOfInterest"]
- * RentalHistoryEvent[]     = ListingFields["history"]
+ * RentalHistoryEventBase[]     = ListingFields["history"]
  *
  * ListingSchema["propertyHistory"][number]["rentalEventsOfInterest"] -> ListingFields["history"]
- * RentalHistoryEventBase[] -> RentalHistoryEvent[]
+ * RentalHistoryEventBase[] -> RentalHistoryEventBase[]
  */
 const propertyHistoryToPriceHistory = (
   propertyHistory: ListingSchema["propertyHistory"]
@@ -47,7 +47,7 @@ export const transformToDbModel: TransformToDbModel<TListingRes, TListingDb> = (
 
     price: listing.listing.pricing.price,
     noFee: listing.listing.pricing.noFee,
-    // RentalHistoryEventBase -> RentalHistoryEvent[]
+    // RentalHistoryEventBase -> RentalHistoryEventBase[]
     history: propertyHistoryToPriceHistory(listing.listing.propertyHistory),
     status: listing.listing.status,
 

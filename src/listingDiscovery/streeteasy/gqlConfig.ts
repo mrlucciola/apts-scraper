@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { RentalHistoryStatus } from "../../db/models/rentalHistory";
 
 export const ReqBodyGqlFiltersPrice = z.object({
   lowerBound: z.number().default(1000), // 1000,
@@ -8,7 +9,7 @@ export type ReqBodyGqlFiltersPrice = z.infer<typeof ReqBodyGqlFiltersPrice>;
 
 export const ReqBodyGqlFilters = z.object({
   /** @note Incomplete enum */
-  rentalStatus: z.enum(["ACTIVE"]).default("ACTIVE"),
+  rentalStatus: RentalHistoryStatus.optional(),
   areas: z.array(z.number()).default([1004000]), // Hoboken = 1004000
   /** @todo add more filters */
   price: ReqBodyGqlFiltersPrice.default(ReqBodyGqlFiltersPrice.parse({})),
