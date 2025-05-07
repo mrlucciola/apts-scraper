@@ -45,6 +45,3 @@ export const RentalHistoryEvent = RentalHistoryEventBase.transform((statusObj, c
   return { ...statusObj, status, pricePercentChange };
 });
 export type RentalHistoryEvent = z.infer<typeof RentalHistoryEvent>;
-
-export const RentalHistory = z.array(RentalHistoryEvent);
-export type RentalHistory = z.infer<typeof RentalHistory>;

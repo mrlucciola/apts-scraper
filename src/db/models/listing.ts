@@ -7,7 +7,7 @@ import { ExtApiService } from "../../general/enums";
 //
 import { BuildingType } from "../../streeteasyUtils/listingEnums";
 import { AddressDb } from "./address";
-import { RentalHistory, RentalHistoryStatus } from "./rentalHistory";
+import { RentalHistoryEvent, RentalHistoryStatus } from "./rentalHistory";
 import { ListingIdField } from "../../general/commonValidation";
 import { Amenities } from "../../streeteasyUtils/interfaces";
 
@@ -46,25 +46,27 @@ export const ListingStats = z.object({
   availableAt: zDayjs.nullish(), // "2024-11-12",
 });
 
-export const ListingFields = UnitInfo.merge(BuildingInfo).merge(ListingStats).extend({
-  id: ListingIdField,
-  address: AddressDb,
+export const ListingFields = UnitInfo.merge(BuildingInfo)
+  .merge(ListingStats)
+  .extend({
+    id: ListingIdField,
+    address: AddressDb,
 
-  price: z.number(),
-  noFee: z.boolean().optional(), // On `EdgeNode`
-  history: RentalHistory.optional(),
-  status: RentalHistoryStatus.optional(),
+    price: z.number(),
+    noFee: z.boolean().optional(), // On `EdgeNode`
+    history: z.array(RentalHistoryEvent).optional(),
+    status: RentalHistoryStatus.optional(),
 
-  broker: BrokerInfo.optional(),
+    broker: BrokerInfo.optional(),
 
-  displayUnit: z.string().nullish(),
-  furnished: z.boolean().nullish(),
+    displayUnit: z.string().nullish(),
+    furnished: z.boolean().nullish(),
 
-  /** From `log` collection */
-  updateId: z.string().optional(),
-  /** From `log` collection. Should match date associated with `updateId`. */
-  dtUpdate: zDayjs.optional(),
-});
+    /** From `log` collection */
+    updateId: z.string().optional(),
+    /** From `log` collection. Should match date associated with `updateId`. */
+    dtUpdate: zDayjs.optional(),
+  });
 export type ListingFields = z.infer<typeof ListingFields>;
 
 export const FieldLogItemBase = z.object({

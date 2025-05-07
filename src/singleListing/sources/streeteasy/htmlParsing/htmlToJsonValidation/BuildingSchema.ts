@@ -4,6 +4,7 @@ import { AddressDb, LatLon } from "../../../../../db/models/address";
 import { zUrl } from "../../../../../utils/zod";
 import { Amenities } from "../../../../../streeteasyUtils/interfaces";
 import { BuildingStatus } from "../../../../../db/models/building";
+import { BuildingTypeSeSl } from "../../../../../streeteasyUtils/listingEnums";
 
 const unimportantFields = z.object({
   /** @deprecated unimportant */
@@ -14,7 +15,7 @@ const unimportantFields = z.object({
   hasPropertyDocs: z.boolean().nullish(),
   /** @deprecated unimportant */
   nearbySchools: z.array(z.any()).nullish(),
-  aboutBuildingType: z.string().nullish(), // "Rental building",
+  aboutBuildingType: BuildingTypeSeSl.nullish(), // "Rental building",
   /** @deprecated unimportant */
   colleges: z.array(z.string()),
   /** @deprecated unimportant */
@@ -26,11 +27,13 @@ const unimportantFields = z.object({
   /** @deprecated unimportant */
   transitStations: z.string().nullish(), // "$29",
   /** @deprecated seems to be specific to just nyc */
-  nyc: z.object({
-    abatementExpiration: z.any().nullish(),
-    abatementType: z.any().nullish(),
-    hasAbatements: z.boolean().nullish(),
-  }).nullish(),
+  nyc: z
+    .object({
+      abatementExpiration: z.any().nullish(),
+      abatementType: z.any().nullish(),
+      hasAbatements: z.boolean().nullish(),
+    })
+    .nullish(),
 });
 
 export const BuildingSchema = unimportantFields.partial().extend({
@@ -54,15 +57,19 @@ export const BuildingSchema = unimportantFields.partial().extend({
     slug: z.string().nullish(), // "east-village",
   }),
   geoCenter: LatLon.nullish(), // {longitude: -73.989555, latitude: 40.733856}
-  policies: z.object({
-    list: z.array(z.string()), // @note - "PETS_ALLOWED"
-    petPolicy: z.object({ catsAllowed: z.any(), dogsAllowed: z.any() }).nullish(),
-  }).nullish(),
+  policies: z
+    .object({
+      list: z.array(z.string()), // @note - "PETS_ALLOWED"
+      petPolicy: z.object({ catsAllowed: z.any(), dogsAllowed: z.any() }).nullish(),
+    })
+    .nullish(),
   type: z.string().nullish(), // "Rental unit",
-  additionalDetails: z.object({
-    leasingStartDate: z.any().nullish(),
-    salesStartDate: z.any().nullish(),
-  }).nullish(),
+  additionalDetails: z
+    .object({
+      leasingStartDate: z.any().nullish(),
+      salesStartDate: z.any().nullish(),
+    })
+    .nullish(),
   status: BuildingStatus.nullish(), // @note Enum - "COMPLETED",
   address: AddressDb, // {street: "145 4th Avenue", city: "NEW YORK", state: "NY", zipCode: "10003"}
   complex: z.any().nullish(), // null,

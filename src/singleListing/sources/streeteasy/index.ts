@@ -1,24 +1,17 @@
 // local
 import type { ListingIdField } from "../../../general/commonValidation";
-import { type FetchFxn, ServiceConfigSl, type ExtractBodyFromResFxn } from "./ServiceConfigSl";
+import { type FetchFxn, ServiceConfigSl } from "./ServiceConfigSl";
 import { buildListingUrl } from "./reqUtils";
 import { buildReqConfig } from "./reqConfig";
 import { extractTargetJsonPayloadJsdom } from "./htmlParsing/extractDomElement";
-import type { HtmlPayloadSchema_SeSl } from "./htmlParsing/htmlToJsonValidation";
+import { transformToDbModel } from "./transformToDbModel";
 
 const defaultReqConfig = buildReqConfig();
-
-type TRes = Response;
-type TBody = string;
-type TListingRes = HtmlPayloadSchema_SeSl;
 
 const fetchListing: FetchFxn = async (listingId: ListingIdField) => {
   const url = buildListingUrl(listingId);
   return await fetch(url, defaultReqConfig);
 };
-
-export const extractBodyFromRes: ExtractBodyFromResFxn<TRes, TBody> = async (res) =>
-  await res.text();
 
 /**
  *
@@ -28,6 +21,7 @@ export const streeteasySingleListingConfig = new ServiceConfigSl({
   reqConfig: defaultReqConfig,
   // Functions
   fetchListing,
-  extractBodyFromRes,
+  extractBodyFromRes: async (res: Response) => await res.text(),
   extractListingFromBody: extractTargetJsonPayloadJsdom,
+  transformToDbModel: transformToDbModel,
 });

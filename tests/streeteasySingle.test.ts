@@ -8,6 +8,7 @@ import { streeteasySingleListingConfig } from "../src/singleListing/sources/stre
 import type { ListingIdField } from "../src/general/commonValidation";
 import { extractTargetJsonPayloadJsdom } from "../src/singleListing/sources/streeteasy/htmlParsing/extractDomElement";
 import type { HtmlPayloadSchema_SeSl } from "../src/singleListing/sources/streeteasy/htmlParsing/htmlToJsonValidation";
+import { transformToDbModel } from "../src/singleListing/sources/streeteasy/transformToDbModel";
 
 const htmlFilesDir = "/src/singleListing/sources/streeteasy/htmlParsing/local";
 
@@ -21,7 +22,7 @@ const randomRawHtml = htmlFiles[randomHtmlIdx];
 
 await connectToListingsDb();
 
-describe("se-sl html parse and validate", () => {
+describe("se-sl html parse-validate-transform", () => {
   let validatedJsonPayload: HtmlPayloadSchema_SeSl | undefined;
 
   test("extract JSON from dom via JSDOM parsing", () => {
@@ -37,8 +38,7 @@ describe("se-sl html parse and validate", () => {
   });
   test("transform", () => {
     if (!validatedJsonPayload) throw new Error(`JSON does not exist: ${validatedJsonPayload}`);
-
-    
+    transformToDbModel(validatedJsonPayload);
   });
 });
 
@@ -50,7 +50,7 @@ describe("se-sl html parse and validate", () => {
 
 // @todo implement: test("se-sl async request-parse-validate-transform flow", async () => {
 // @todo implement: test("se-sl async request-parse-validate-transform-update flow", async () => {
-test("se-sl async request-parse-validate flow", async () => {
+test("se-sl async request-parse-validate-transform flow", async () => {
   // Test params:
   const testListingId: ListingIdField = "3233256"; // 145 4th Ave. #16A - East Village
 
@@ -64,9 +64,10 @@ test("se-sl async request-parse-validate flow", async () => {
   expect(resText, "Var `resText` must be valid HTML").toContain("<!DOCTYPE html>");
 
   const listingDetailRes = streeteasySingleListingConfig.extractListingFromBody(resText);
-  console.log("res text:", listingDetailRes);
-  expect(listingDetailRes, "JSON payload must be validated").toBeDefined();
 
-  // @todo Add `transform` step
+  // 3) Transform
+  const listingDetailDb = streeteasySingleListingConfig.transformToDbModel(listingDetailRes);
+  console.log("listingDetailDb:", listingDetailDb);
+
   // @todo Add `db-update` step
 });

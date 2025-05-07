@@ -1,9 +1,5 @@
 import { z } from "zod";
 import { ListingIdField } from "../../../../../general/commonValidation";
-import { zDayjs, zUrl } from "../../../../../utils/zod";
-import { Amenities } from "../../../../../streeteasyUtils/interfaces";
-import { RentalHistoryStatus } from "../../../../../db/models/rentalHistory";
-import { AddressDb } from "../../../../../db/models/address";
 import { ContactBoxInitialDataSchema } from "./ContactBoxInitialDataSchema";
 import { BuildingSchema } from "./BuildingSchema";
 import { HeaderDataSchema } from "./HeaderDataSchema";
@@ -25,17 +21,18 @@ const UnimportantFields = z.object({
   //
   viewer: z.object({}).passthrough(), // @todo INCOMPLETE OBJECT
   //
-  listingType: z.string(), // @todo INCOMPLETE ENUM
   nearMeListingType: z.string(), // "rental", @todo INCOMPLETE ENUM
 });
 
 const ExperimentsSchema = z.object({
-  streeteasy_sale_hdp_open_house_connect: z.object({
-    assignment_service_cd: z.string().nullish(), //  "split",
-    key_type_cd: z.string().nullish(), //  "guid",
-    randomization_key: z.string().nullish(), //  "f43ccf4e-33f7-4fb5-8aa7-dc135cee834c",
-    treatment_nm: z.string().nullish(), //  "off",
-  }),
+  streeteasy_sale_hdp_open_house_connect: z
+    .object({
+      assignment_service_cd: z.string().nullish(), //  "split",
+      key_type_cd: z.string().nullish(), //  "guid",
+      randomization_key: z.string().nullish(), //  "f43ccf4e-33f7-4fb5-8aa7-dc135cee834c",
+      treatment_nm: z.string().nullish(), //  "off",
+    })
+    .nullish(),
 });
 
 /** Top-level JSON Schema */
@@ -44,12 +41,13 @@ export const HtmlPayloadSchema_SeSl = z.object({
   headerData: HeaderDataSchema,
   listing: ListingSchema,
   contactBoxInitialData: ContactBoxInitialDataSchema,
-  experiments: ExperimentsSchema,
+  experiments: ExperimentsSchema.nullish(),
   agentsIds: z.array(ListingIdField).nullish(), // ["362385"],
   enableLinkShareTracking: z.boolean().nullish(),
   note: z.string().nullish(), // ""
   referer: z.any(), // null
   agentsInfo: z.any(), // null
+  listingType: z.enum(["rental"]).optional(), // @todo INCOMPLETE ENUM
   //
 });
 export type HtmlPayloadSchema_SeSl = z.infer<typeof HtmlPayloadSchema_SeSl>;

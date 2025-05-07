@@ -11,7 +11,7 @@ import { connectToListingsDb } from "../src/db/connectToDb";
 import ListingDeprecModel from "../src/db/models/listingDeprec";
 import { BuildingType } from "../src/streeteasyUtils/listingEnums";
 import { zDayjs } from "../src/utils/zod";
-import { RentalHistoryEvent, type RentalHistory } from "../src/db/models/rentalHistory";
+import { RentalHistoryEvent } from "../src/db/models/rentalHistory";
 
 await connectToListingsDb();
 // import { createListing } from "../src/db/crud";
@@ -121,7 +121,7 @@ test("migrate listingDeprec to listing", async () => {
   const existingDeprecListings = await ListingDeprecModel.find();
   const deprecListingIds = existingDeprecListings.map((l) => {
     try {
-      const newPriceHistory: RentalHistory | undefined = l.htmlDetail?.priceHistory
+      const newPriceHistory: RentalHistoryEvent[] | undefined = l.htmlDetail?.priceHistory
         ? l.htmlDetail.priceHistory.map((ph) =>
             RentalHistoryEvent.parse({
               date: ph ? ph.date : undefined,
@@ -137,10 +137,10 @@ test("migrate listingDeprec to listing", async () => {
           latitude: l.latitude,
           unit: l.rental?.address?.unit,
           street: l.htmlDetail?.fullAddress?.streetAddress,
-          state: l.htmlDetail?.fullAddress?.addressRegion, // state
+          state: l.htmlDetail?.fullAddress?.addressRegion ?? undefined, // state
           region: l.htmlDetail?.activeRentalStats?.propAreaShort, // east-village
-          zipCode: l.htmlDetail?.fullAddress?.postalCode,
-          city: l.htmlDetail?.fullAddress?.addressLocality,
+          zipCode: l.htmlDetail?.fullAddress?.postalCode ?? undefined,
+          city: l.htmlDetail?.fullAddress?.addressLocality ?? undefined,
         },
         history: newPriceHistory ?? undefined,
         price: l.listed_price,

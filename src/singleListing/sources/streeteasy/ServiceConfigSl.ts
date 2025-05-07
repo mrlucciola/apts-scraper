@@ -1,8 +1,5 @@
-import type { DocumentType } from "@typegoose/typegoose/lib/types";
-//
 import type { ExtApiService } from "../../../general/enums";
 import type { ResType } from "../../../listingDiscovery/interfaces";
-import type { Listing } from "../../../db/models/listing";
 import type { ListingIdField } from "../../../general/commonValidation";
 
 export type FetchFxn<TRes extends ResType = Response> = (
@@ -14,7 +11,10 @@ export type ExtractBodyFromResFxn<TRes extends ResType, TBody> = (res: TRes) => 
 
 export type ExtractListingFromBodyFxn<TBody, TListingRes> = (body: TBody) => TListingRes;
 
+export type TransformToDbModel<TListingRes, TListingDb> = (listing: TListingRes) => TListingDb;
+
 export class ServiceConfigSl<
+  TListingDb,
   TListingRes,
   TBody,
   TRes extends ResType,
@@ -27,9 +27,13 @@ export class ServiceConfigSl<
   readonly fetchListing: TFetchFxn;
   readonly extractBodyFromRes: ExtractBodyFromResFxn<TRes, TBody>;
   readonly extractListingFromBody: ExtractListingFromBodyFxn<TBody, TListingRes>;
+  readonly transformToDbModel: TransformToDbModel<TListingRes, TListingDb>;
 
   constructor(
-    newConfig: Omit<ServiceConfigSl<TListingRes, TBody, TRes, TFetchFxn, TSrv>, "fetchAndInsert">
+    newConfig: Omit<
+      ServiceConfigSl<TListingDb, TListingRes, TBody, TRes, TFetchFxn, TSrv>,
+      "fetchAndInsert"
+    >
   ) {
     this.serviceName = newConfig.serviceName;
     this.reqConfig = newConfig.reqConfig;
@@ -37,6 +41,7 @@ export class ServiceConfigSl<
     this.fetchListing = newConfig.fetchListing;
     this.extractBodyFromRes = newConfig.extractBodyFromRes;
     this.extractListingFromBody = newConfig.extractListingFromBody;
+    this.transformToDbModel = newConfig.transformToDbModel;
   }
 
   /** */
@@ -53,7 +58,7 @@ export class ServiceConfigSl<
 
     const listingRes = this.extractListingFromBody(body);
 
-    // const listingsDb = this.validateAndTransformToDbModel(listingsRes);
+    const listingsDb = this.transformToDbModel(listingRes);
 
     // // @todo figure this out
     // // const filteredListings = this.filterListingsBy(listingsDb);
