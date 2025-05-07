@@ -13,6 +13,8 @@ export const extractTargetJsonPayloadJsdom = (htmlStr: string): HtmlPayloadSchem
 
   const parsedHtmlDom = new JSDOM(cleanedHtml);
   const bodyScripts = parsedHtmlDom.window.document.body.querySelectorAll("script");
+  if (bodyScripts.length === 0)
+    throw new Error("No <script> tags found in <body> - cannot be empty");
 
   for (let idx = 0; idx < bodyScripts.length; idx++) {
     const scriptText = bodyScripts[idx].textContent;
