@@ -7,7 +7,7 @@ import { ExtApiService } from "../../general/enums";
 //
 import { BuildingType } from "../../streeteasyUtils/listingEnums";
 import { AddressDb } from "./address";
-import { RentalHistoryEvent, RentalHistoryStatus } from "./rentalHistory";
+import { RentalHistoryEventBase, RentalHistoryStatus } from "./rentalHistory";
 import { ListingIdField } from "../../general/commonValidation";
 import { Amenities } from "../../streeteasyUtils/interfaces";
 
@@ -54,7 +54,7 @@ export const ListingFields = UnitInfo.merge(BuildingInfo)
 
     price: z.number(),
     noFee: z.boolean().optional(), // On `EdgeNode`
-    history: z.array(RentalHistoryEvent).optional(),
+    history: z.array(RentalHistoryEventBase).optional(),
     status: RentalHistoryStatus.optional(),
 
     broker: BrokerInfo.optional(),
