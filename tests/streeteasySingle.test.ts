@@ -1,3 +1,4 @@
+import * as _ from "lodash";
 import { describe, expect, test } from "bun:test";
 // db
 import { connectToListingsDb } from "../src/db/connectToDb";
@@ -10,7 +11,8 @@ import type { ListingIdField } from "../src/general/commonValidation";
 import { extractTargetJsonPayloadJsdom } from "../src/singleListing/sources/streeteasy/htmlParsing/extractDomElement";
 import type { HtmlPayloadSchema_SeSl } from "../src/singleListing/sources/streeteasy/htmlParsing/htmlToJsonValidation";
 import { transformToDbModel } from "../src/singleListing/sources/streeteasy/transformToDbModel";
-import { origListingDb, updatedListingDb } from "./local.streeteasySingle.data";
+import { origListingTest, updatedListingTest } from "./local.streeteasySingle.data";
+import { ListingReadValidation, ListingWriteValidation } from "../src/db/models/listing";
 
 const htmlFilesDir = "/src/singleListing/sources/streeteasy/htmlParsing/local";
 
@@ -46,30 +48,85 @@ describe("se-sl html parse-validate-transform", () => {
 
 // @todo incomplete test
 test("update db", async () => {
-  // Query the original doc
+  // 0) Query the original doc
   const origListingDoc = await findListingByListingId(
-    origListingDb.sources.streeteasy.id,
+    origListingTest.sources.streeteasy.id,
     "streeteasy"
   );
-  // origListingDoc === origListingDb
+  const origListingDb = ListingReadValidation.parse(origListingDoc);
 
-  const listingDocId = origListingDoc?.id;
-  expect(listingDocId).toBeDefined();
+  // 1) Validate test inputs
+  //   1.1) Validate listing exists
+  const listingDocId = origListingDb?._id;
+  expect(
+    listingDocId,
+    `SE Listing #${origListingTest.sources.streeteasy.id} does not exist.`
+  ).toBeDefined();
+  //   1.2) @note Possibly unnecessary - Test & DB values should match for listing.
+  expect(
+    _.isEqual(
+      ListingWriteValidation.parse(origListingTest),
+      ListingWriteValidation.parse(origListingDb)
+    ),
+    "Test & DB values should match for listing"
+  ).toBeTrue();
 
-  await updateListing(updatedListingDb, "streeteasy");
+  // 2) Update and validate changes in listing document
+  //   2.1) Update listing document in DB
+  await updateListing(updatedListingTest, "streeteasy");
+  //   2.2) Fetch listing doc - should reflect changed fields
   const updatedListingDoc = await findListingByListingId(
-    updatedListingDb.sources.streeteasy.id,
+    updatedListingTest.sources.streeteasy.id,
     "streeteasy"
   );
-  // updatedListingDoc === updatedListingDb
-  console.log("\n\norigListingDoc", origListingDoc);
-  console.log("\n\nupdatedListingDoc", updatedListingDoc);
-  const origListingDoc2 = await updateListing(origListingDb, "streeteasy");
-  // origListingDoc2 === origListingDoc === origListingDb
+  const updatedListingDb = ListingReadValidation.parse(updatedListingDoc);
+  //   2.3) Validate changed fields
+  expect(
+    _.isEqual(
+      ListingWriteValidation.parse(updatedListingTest),
+      ListingWriteValidation.parse(updatedListingDoc)
+    )
+  ).toBeTrue();
+  expect(
+    _.isEqual(
+      ListingWriteValidation.parse(updatedListingTest),
+      ListingWriteValidation.parse(updatedListingDb)
+    )
+  ).toBeTrue();
 
-  // expect(doc.acknowledged).toBeTrue();
-  // expect(doc.matchedCount).toEqual(1);
-  // expect(doc.modifiedCount).toEqual(1);
+  // 3) Revert update and validate
+  //   3.1) Update listing document in DB
+  await updateListing(origListingTest, "streeteasy");
+  //   3.2) Get reverted listing document from DB
+  const revertedListingDoc = await findListingByListingId(
+    updatedListingTest.sources.streeteasy.id,
+    "streeteasy"
+  );
+  const revertedListingDb = ListingReadValidation.parse(revertedListingDoc);
+  expect(
+    _.isEqual(
+      ListingWriteValidation.parse(revertedListingDoc),
+      ListingWriteValidation.parse(revertedListingDb)
+    )
+  ).toBeTrue();
+  expect(
+    _.isEqual(
+      ListingWriteValidation.parse(revertedListingDb),
+      ListingWriteValidation.parse(origListingDoc)
+    )
+  ).toBeTrue();
+  expect(
+    _.isEqual(
+      ListingWriteValidation.parse(revertedListingDb),
+      ListingWriteValidation.parse(origListingTest)
+    )
+  ).toBeTrue();
+  expect(
+    _.isEqual(
+      ListingWriteValidation.parse(revertedListingDb),
+      ListingWriteValidation.parse(origListingDb)
+    )
+  ).toBeTrue();
 });
 
 /** ## Tests to add:

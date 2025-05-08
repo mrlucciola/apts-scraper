@@ -3,6 +3,7 @@ import type { DocumentType } from "@typegoose/typegoose/lib/types";
 import { z } from "zod";
 // utils
 import { zDayjs } from "../../utils/zod";
+import { zDocFields, zMongoId } from "../zodSchemas";
 import { ExtApiService } from "../../general/enums";
 //
 import { BuildingType } from "../../streeteasyUtils/listingEnums";
@@ -75,11 +76,20 @@ export const FieldLogItemBase = z.object({
 });
 export type FieldLogItemBase = z.infer<typeof FieldLogItemBase>;
 
+export const ListingWriteValidation = z.object({
+  current: ListingFields,
+  sources: z.record(ExtApiService, ListingFields),
+});
+export type ListingWriteValidation = z.infer<typeof ListingWriteValidation>;
+
+export const ListingReadValidation = ListingWriteValidation.merge(zDocFields);
+export type ListingReadValidation = z.infer<typeof ListingReadValidation>;
+
 @modelOptions({
   schemaOptions: { collection: "listings", timestamps: true },
   options: { allowMixed: Severity.ALLOW },
 })
-export class Listing {
+export class Listing implements ListingWriteValidation {
   @prop({ required: false, type: () => Object })
   current: ListingFields;
 
